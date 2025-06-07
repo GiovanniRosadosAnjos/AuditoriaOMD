@@ -3,43 +3,64 @@ body {
     background-color: #f9f9f9;
     margin: 0;
     padding: 20px 2cm;
+    box-sizing: border-box;
 }
 
 h1 {
     text-align: center;
     color: #333;
+    margin-top: 0;
+    margin-bottom: 10px; /* menor que antes */
 }
 
-.linha-fina {
-    border: 0;
-    border-top: 2px solid #2196F3;
-    margin: 10px 0;
-}
-
-.linha-grossa {
-    border: 0;
-    border-top: 4px solid #2196F3;
-    margin: 10px 0;
+h2 {
+    font-size: 1.2em;
+    color: #333;
+    margin-top: 0;      /* tira espaço acima */
+    margin-bottom: 8px; /* reduz espaço abaixo */
 }
 
 form {
     background: #fff;
     padding: 20px;
     border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 15px; /* reduz um pouco o espaçamento geral */
+}
+
+.div-container {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.divA, .divB {
+    flex: 1 1 45%;
+    background-color: #fefefe;
+    padding: 15px 15px 10px 15px; /* menos padding inferior */
+    border-radius: 8px;
+    box-shadow: 0 0 5px rgba(0,0,0,0.05);
+}
+
+.divC {
+    background-color: #fefefe;
+    padding: 15px 15px 10px 15px; /* menos padding inferior */
+    border-radius: 8px;
+    box-shadow: 0 0 5px rgba(0,0,0,0.05);
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
 }
 
 label {
-    display: block;
-    margin-top: 10px;
     font-weight: bold;
-}
-
-.inline-radio {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-top: 5px;
+    margin-bottom: 5px;
+    color: #555;
 }
 
 input[type=text],
@@ -47,20 +68,56 @@ input[type=email],
 input[type=tel] {
     width: 100%;
     padding: 8px;
-    margin-top: 5px;
     box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.form-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.form-row .form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.linha-azul {
+    border: none;
+    border-top: 2px solid #007bff;
+    margin: 5px 0 15px 0;
+}
+
+.divB .form-group label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.divB .form-group label > input[type="radio"] {
+    margin-left: 10px;
+    margin-right: 4px;
 }
 
 button {
-    margin-top: 20px;
     background-color: #4CAF50;
     color: white;
     border: none;
-    padding: 10px 20px;
+    padding: 10px 15px;
     border-radius: 5px;
     cursor: pointer;
+    align-self: flex-start;
 }
 
 button:hover {
     background-color: #45a049;
+}
+
+.divA, .divB, .divC {
+    background-color: #efefa6; /* amarelo bem claro */
+    padding: 15px 15px 10px 15px; /* mantém padding ajustado */
+    border-radius: 8px;
+    box-shadow: 0 0 5px rgba(0,0,0,0.05);
 }
