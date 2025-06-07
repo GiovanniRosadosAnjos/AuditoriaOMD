@@ -1,0 +1,1 @@
+document.getElementById('formNovaAuditoria').addEventListener('submit', function(e) { e.preventDefault(); alert('Nova auditoria iniciada!'); });

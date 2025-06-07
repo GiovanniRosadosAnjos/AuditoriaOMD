@@ -1,0 +1,1 @@
+document.getElementById('formEmpresa').addEventListener('submit', function(e) { e.preventDefault(); alert('Empresa cadastrada com sucesso!'); });
