@@ -10,6 +10,7 @@
     <h1>Cadastro de Empresa</h1>
     <form>
         <div class="div-container">
+            <!-- DIV A (Empresa) -->
             <div class="divA">
                 <h2>Dados da Empresa</h2>
                 <div class="form-group">
@@ -26,16 +27,16 @@
                 </div>
             </div>
 
+            <!-- DIV B (Endereço) -->
             <div class="divB">
                 <h2>Endereço</h2>
                 <hr class="linha-azul" />
                 <div class="form-group">
-                    <label>Localização:
-                        <input type="radio" id="brasil" name="localizacao" value="brasil" required />
-                        <label for="brasil">Brasil</label>
-                        <input type="radio" id="exterior" name="localizacao" value="exterior" />
-                        <label for="exterior">Exterior</label>
-                    </label>
+                    <label>Localização:</label>
+                    <div class="radio-group">
+                      <label><input type="radio" id="brasil" name="localizacao" value="brasil" required /> Brasil</label>
+                      <label><input type="radio" id="exterior" name="localizacao" value="exterior" /> Exterior</label>
+                    </div>
                 </div>
 
                 <div class="form-row">
@@ -45,20 +46,20 @@
                     </div>
                     <div class="form-group" style="flex: 1; margin-left: 10px;">
                         <label for="numero">Número:</label>
-                        <input type="text" id="numero" name="numero" required />
+                        <input type="text" id="numero" name="numero" maxlength="5" required />
                     </div>
                 </div>
 
                 <div class="form-row">
-                    <div class="form-group" style="flex: 1;">
+                    <div class="form-group">
                         <label for="bairro">Bairro:</label>
                         <input type="text" id="bairro" name="bairro" required />
                     </div>
-                    <div class="form-group" style="flex: 1; margin-left: 10px;">
+                    <div class="form-group">
                         <label for="cidade">Cidade:</label>
                         <input type="text" id="cidade" name="cidade" required />
                     </div>
-                    <div class="form-group" style="flex: 1; margin-left: 10px;">
+                    <div class="form-group">
                         <label for="estado">Estado:</label>
                         <input type="text" id="estado" name="estado" required />
                     </div>
@@ -71,57 +72,65 @@
             </div>
         </div>
 
+        <!-- DIV C (Contatos) -->
         <div class="divC">
             <h2>Contatos</h2>
-            <div class="form-group">
-                <label for="nomeContato">Nome:</label>
-                <input type="text" id="nomeContato" name="nomeContato" />
+            <hr class="linha-azul" />
+            <div id="contatos-container">
+                <div class="divC-inputs">
+                    <div class="form-group">
+                        <label for="nomeContato[]">Nome:</label>
+                        <input type="text" name="nomeContato[]" />
+                    </div>
+                    <div class="form-group">
+                        <label for="funcao[]">Função:</label>
+                        <input type="text" name="funcao[]" />
+                    </div>
+                    <div class="form-group">
+                        <label for="email[]">Email:</label>
+                        <input type="email" name="email[]" />
+                    </div>
+                    <div class="form-group">
+                        <label for="telefone[]">Telefone:</label>
+                        <input type="tel" name="telefone[]" />
+                    </div>
+                </div>
             </div>
-            <div class="form-group">
-                <label for="funcao">Função:</label>
-                <input type="text" id="funcao" name="funcao" />
-            </div>
-            <div class="form-group">
-                <label for="email">Email:</label>
-                <input type="email" id="email" name="email" />
-            </div>
-            <div class="form-group">
-                <label for="telefone">Telefone:</label>
-                <input type="tel" id="telefone" name="telefone" />
-            </div>
+            <button type="button" onclick="adicionarContato()">+ Adicionar Contato</button>
         </div>
 
         <button type="submit">Cadastrar Empresa</button>
     </form>
 
+    <script src="cadastrar-empresa.js"></script>
     <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const form = document.querySelector('form');
-      const radioBrasil = document.getElementById('brasil');
-      const radioExterior = document.getElementById('exterior');
-      const cnpjInput = document.getElementById('cnpj');
+        function adicionarContato() {
+            const container = document.getElementById('contatos-container');
 
-      function atualizarObrigatoriedadeCNPJ() {
-        if (radioBrasil.checked) {
-          cnpjInput.setAttribute('required', 'required');
-        } else {
-          cnpjInput.removeAttribute('required');
+            const novoContato = document.createElement('div');
+            novoContato.className = 'divC-inputs';
+
+            novoContato.innerHTML = `
+                <div class="form-group">
+                    <label for="nomeContato[]">Nome:</label>
+                    <input type="text" name="nomeContato[]" />
+                </div>
+                <div class="form-group">
+                    <label for="funcao[]">Função:</label>
+                    <input type="text" name="funcao[]" />
+                </div>
+                <div class="form-group">
+                    <label for="email[]">Email:</label>
+                    <input type="email" name="email[]" />
+                </div>
+                <div class="form-group">
+                    <label for="telefone[]">Telefone:</label>
+                    <input type="tel" name="telefone[]" />
+                </div>
+            `;
+
+            container.appendChild(novoContato);
         }
-      }
-
-      radioBrasil.addEventListener('change', atualizarObrigatoriedadeCNPJ);
-      radioExterior.addEventListener('change', atualizarObrigatoriedadeCNPJ);
-
-      atualizarObrigatoriedadeCNPJ();
-
-      form.addEventListener('submit', (e) => {
-        if (radioBrasil.checked && cnpjInput.value.trim() === '') {
-          e.preventDefault();
-          alert('O campo CNPJ é obrigatório quando a localização é Brasil.');
-          cnpjInput.focus();
-        }
-      });
-    });
     </script>
 </body>
 </html>

@@ -1,8 +1,5 @@
-document.getElementById('formEmpresa').addEventListener('submit', function(e) { e.preventDefault(); alert('Empresa cadastrada com sucesso!'); });
-
-
 document.addEventListener('DOMContentLoaded', () => {
-  const form = document.querySelector('form');
+  const form = document.getElementById('formEmpresa');
   const radioBrasil = document.getElementById('brasil');
   const radioExterior = document.getElementById('exterior');
   const cnpjInput = document.getElementById('cnpj');
@@ -15,20 +12,20 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Atualiza obrigatoriedade sempre que o radio mudar
   radioBrasil.addEventListener('change', atualizarObrigatoriedadeCNPJ);
   radioExterior.addEventListener('change', atualizarObrigatoriedadeCNPJ);
 
-  // Também já define o estado inicial ao carregar a página
   atualizarObrigatoriedadeCNPJ();
 
   form.addEventListener('submit', (e) => {
-    // Se Brasil está selecionado e o CNPJ está vazio, impede o envio e mostra alerta
     if (radioBrasil.checked && cnpjInput.value.trim() === '') {
       e.preventDefault();
       alert('O campo CNPJ é obrigatório quando a localização é Brasil.');
       cnpjInput.focus();
+    } else {
+      e.preventDefault(); // evita o reload da página
+      alert('Empresa cadastrada com sucesso!');
+      // aqui você pode resetar o form ou enviar os dados via AJAX
     }
   });
 });
-
