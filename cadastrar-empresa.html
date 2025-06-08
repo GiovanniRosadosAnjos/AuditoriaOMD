@@ -1,136 +1,92 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Cadastro de Empresa</title>
-    <link rel="stylesheet" href="cadastrar-empresa.css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cadastrar Empresa</title>
+  <link rel="stylesheet" href="cadastrar-empresa.css" /> <!-- seu css aqui, ou embedado -->
 </head>
 <body>
-    <h1>Cadastro de Empresa</h1>
-    <form>
-        <div class="div-container">
-            <!-- DIV A (Empresa) -->
-            <div class="divA">
-                <h2>Dados da Empresa</h2>
-                <div class="form-group">
-                    <label for="nomeFantasia">Nome Fantasia:</label>
-                    <input type="text" id="nomeFantasia" name="nomeFantasia" required />
-                </div>
-                <div class="form-group">
-                    <label for="razaoSocial">Razão Social:</label>
-                    <input type="text" id="razaoSocial" name="razaoSocial" required />
-                </div>
-                <div class="form-group">
-                    <label for="cnpj">CNPJ:</label>
-                    <input type="text" id="cnpj" name="cnpj" />
-                </div>
-            </div>
 
-            <!-- DIV B (Endereço) -->
-            <div class="divB">
-                <h2>Endereço</h2>
-                <hr class="linha-azul" />
-                <div class="form-group">
-                    <label>Localização:</label>
-                    <div class="radio-group">
-                      <label><input type="radio" id="brasil" name="localizacao" value="brasil" required /> Brasil</label>
-                      <label><input type="radio" id="exterior" name="localizacao" value="exterior" /> Exterior</label>
-                    </div>
-                </div>
+  <h1>Cadastrar Empresa</h1>
 
-                <div class="form-row">
-                    <div class="form-group" style="flex: 2;">
-                        <label for="rua">Rua:</label>
-                        <input type="text" id="rua" name="rua" required />
-                    </div>
-                    <div class="form-group" style="flex: 1; margin-left: 10px;">
-                        <label for="numero">Número:</label>
-                        <input type="text" id="numero" name="numero" maxlength="5" required />
-                    </div>
-                </div>
+  <div class="buttons-container">
+    <button type="button" id="btnNovoCadastro">Cadastrar Nova Empresa</button>
+    <button type="button" id="btnRevisarCadastro">Revisar Cadastro</button>
+  </div>
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="bairro">Bairro:</label>
-                        <input type="text" id="bairro" name="bairro" required />
-                    </div>
-                    <div class="form-group">
-                        <label for="cidade">Cidade:</label>
-                        <input type="text" id="cidade" name="cidade" required />
-                    </div>
-                    <div class="form-group">
-                        <label for="estado">Estado:</label>
-                        <input type="text" id="estado" name="estado" required />
-                    </div>
-                </div>
+  <form id="formEmpresa">
 
-                <div class="form-group">
-                    <label for="pais">País:</label>
-                    <input type="text" id="pais" name="pais" required />
-                </div>
-            </div>
+    <input type="hidden" id="idEmpresaRevisao" name="idEmpresaRevisao" />
+
+    <div class="div-container">
+      <div class="divA">
+        <label for="nomeFantasia">Nome Fantasia</label>
+        <input type="text" id="nomeFantasia" name="nomeFantasia" required />
+
+        <label for="razaoSocial">Razão Social</label>
+        <input type="text" id="razaoSocial" name="razaoSocial" required />
+
+        <label for="cnpj">CNPJ</label>
+        <input type="text" id="cnpj" name="cnpj" required />
+      </div>
+
+      <div class="divB">
+        <label for="rua">Rua</label>
+        <input type="text" id="rua" name="rua" required />
+
+        <label for="numero">Número</label>
+        <input type="text" id="numero" name="numero" required />
+
+        <label for="bairro">Bairro</label>
+        <input type="text" id="bairro" name="bairro" required />
+
+        <label for="cidade">Cidade</label>
+        <input type="text" id="cidade" name="cidade" required />
+
+        <label for="estado">Estado (UF)</label>
+        <input type="text" id="estado" name="estado" required />
+
+        <label for="pais">País</label>
+        <input type="text" id="pais" name="pais" required />
+
+        <label for="cep">CEP</label>
+        <input type="text" id="cep" name="cep" required />
+      </div>
+    </div>
+
+    <div class="divC">
+      <h2>Contatos</h2>
+      <div id="contatosContainer">
+        <!-- Contatos adicionados dinamicamente aqui -->
+        <div class="divC-inputs contato-item">
+          <div class="form-group">
+            <label>Nome</label>
+            <input type="text" name="contatoNome[]" />
+          </div>
+          <div class="form-group">
+            <label>E-mail</label>
+            <input type="email" name="contatoEmail[]" />
+          </div>
+          <div class="form-group">
+            <label>Telefone</label>
+            <input type="tel" name="contatoTelefone[]" />
+          </div>
+          <button type="button" class="btnRemoveContato" style="height: 36px; align-self: flex-end;">-</button>
         </div>
+      </div>
+      <button type="button" id="btnAddContato">+ Adicionar Contato</button>
+    </div>
 
-        <!-- DIV C (Contatos) -->
-        <div class="divC">
-            <h2>Contatos</h2>
-            <hr class="linha-azul" />
-            <div id="contatos-container">
-                <div class="divC-inputs">
-                    <div class="form-group">
-                        <label for="nomeContato[]">Nome:</label>
-                        <input type="text" name="nomeContato[]" />
-                    </div>
-                    <div class="form-group">
-                        <label for="funcao[]">Função:</label>
-                        <input type="text" name="funcao[]" />
-                    </div>
-                    <div class="form-group">
-                        <label for="email[]">Email:</label>
-                        <input type="email" name="email[]" />
-                    </div>
-                    <div class="form-group">
-                        <label for="telefone[]">Telefone:</label>
-                        <input type="tel" name="telefone[]" />
-                    </div>
-                </div>
-            </div>
-            <button type="button" onclick="adicionarContato()">+ Adicionar Contato</button>
-        </div>
+    <button type="submit">Salvar</button>
+  </form>
 
-        <button type="submit">Cadastrar Empresa</button>
-    </form>
+  <dialog id="modalEmpresas">
+    <h3>Selecione a empresa para revisar (duplo clique)</h3>
+    <div id="listaEmpresas"></div>
+    <button type="button" onclick="document.getElementById('modalEmpresas').close()">Fechar</button>
+  </dialog>
 
-    <script src="cadastrar-empresa.js"></script>
-    <script>
-        function adicionarContato() {
-            const container = document.getElementById('contatos-container');
-
-            const novoContato = document.createElement('div');
-            novoContato.className = 'divC-inputs';
-
-            novoContato.innerHTML = `
-                <div class="form-group">
-                    <label for="nomeContato[]">Nome:</label>
-                    <input type="text" name="nomeContato[]" />
-                </div>
-                <div class="form-group">
-                    <label for="funcao[]">Função:</label>
-                    <input type="text" name="funcao[]" />
-                </div>
-                <div class="form-group">
-                    <label for="email[]">Email:</label>
-                    <input type="email" name="email[]" />
-                </div>
-                <div class="form-group">
-                    <label for="telefone[]">Telefone:</label>
-                    <input type="tel" name="telefone[]" />
-                </div>
-            `;
-
-            container.appendChild(novoContato);
-        }
-    </script>
+  <script src="cadastrar-empresa.js"></script>
 </body>
 </html>

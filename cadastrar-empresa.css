@@ -10,14 +10,14 @@ h1 {
     text-align: center;
     color: #333;
     margin-top: 0;
-    margin-bottom: 10px; /* menor que antes */
+    margin-bottom: 10px;
 }
 
 h2 {
     font-size: 1.2em;
     color: #333;
     margin-top: 0;
-    margin-bottom: 8px; /* reduz espaço abaixo */
+    margin-bottom: 8px;
 }
 
 form {
@@ -27,30 +27,34 @@ form {
     box-shadow: 0 0 5px rgba(0,0,0,0.1);
     display: flex;
     flex-direction: column;
-    gap: 15px; /* reduz um pouco o espaçamento geral */
+    gap: 15px;
 }
 
 .div-container {
     display: flex;
     gap: 20px;
-    flex-wrap: wrap;
+    flex-wrap: nowrap; /* Mantém divA e divB lado a lado */
 }
 
 .divA, .divB {
-    flex: 1 1 45%;
+    flex: 1; /* Dividem igualmente o espaço horizontal */
     background-color: #efefa6; /* amarelo bem claro */
-    padding: 15px 15px 10px 15px; /* menos padding inferior */
+    padding: 15px;
     border-radius: 8px;
     box-shadow: 0 0 5px rgba(0,0,0,0.05);
+    box-sizing: border-box;
 }
 
 .divC {
     background-color: #efefa6; /* amarelo bem claro */
-    padding: 15px 15px 10px 15px;
+    padding: 15px;
     border-radius: 8px;
     box-shadow: 0 0 5px rgba(0,0,0,0.05);
+    margin-top: 20px;
+    width: 100%; /* Ocupa toda largura disponível */
+    box-sizing: border-box;
     display: flex;
-    flex-direction: column; /* título + linha + campos empilhados vertical */
+    flex-direction: column;
     gap: 10px;
 }
 
@@ -138,9 +142,4 @@ button:hover {
 
 .divB .form-row .form-group:nth-child(2) {
     flex: 1 1 80px; /* número com largura fixa e limitada */
-}
-
-/* Remove centralização de texto dos inputs */
-input {
-    text-align: left;
 }
