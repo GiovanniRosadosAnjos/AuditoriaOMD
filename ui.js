@@ -1,89 +1,30 @@
+import { criarContatoItem } from './contatoUtils.js';
+import { preencherFormulario } from './formularioUtils.js';
+
 // Referência de elementos
-const form = document.getElementById('formEmpresa');
 const btnRevisar = document.getElementById('btnRevisarCadastro');
 const btnNovoCadastro = document.getElementById('btnNovoCadastro');
-const modal = document.getElementById('modalEmpresas');
-const listaEmpresas = document.getElementById('listaEmpresas');
-const contatosContainer = document.getElementById('contatosContainer');
 const btnAddContato = document.getElementById('btnAddContato');
 
-// Função para criar um contato
-function criarContatoItem(nome = '', email = '', telefone = '', exibirLabel = false) {
-  const div = document.createElement('div');
-  div.className = 'divC-inputs contato-item';
-
-  div.innerHTML = `
-    <div class="form-group">
-      ${exibirLabel ? '<label>Nome</label>' : ''}
-      <input type="text" name="contatoNome[]" value="${nome}" />
-    </div>
-    <div class="form-group">
-      ${exibirLabel ? '<label>E-mail</label>' : ''}
-      <input type="email" name="contatoEmail[]" value="${email}" />
-    </div>
-    <div class="form-group">
-      ${exibirLabel ? '<label>Telefone</label>' : ''}
-      <input type="tel" name="contatoTelefone[]" value="${telefone}" />
-    </div>
-    <button type="button" class="btnRemoveContato" style="height: 36px; align-self: flex-end;">-</button>
-  `;
-
-  div.querySelector('.btnRemoveContato').addEventListener('click', () => {
-    if (contatosContainer.querySelectorAll('.contato-item').length > 1) {
-      div.remove();
-      const primeiroContato = contatosContainer.querySelector('.contato-item');
-      if (primeiroContato) {
-        const nomeInput = primeiroContato.querySelector('input[name="contatoNome[]"]').value;
-        const emailInput = primeiroContato.querySelector('input[name="contatoEmail[]"]').value;
-        const telefoneInput = primeiroContato.querySelector('input[name="contatoTelefone[]"]').value;
-        primeiroContato.innerHTML = criarContatoItem(nomeInput, emailInput, telefoneInput, true).innerHTML;
-      }
-    } else {
-      alert('Deve haver pelo menos um contato.');
-    }
-  });
-
-  return div;
-}
+const form = document.getElementById('formEmpresa');                    // div: A, B e C
+const modal = document.getElementById('modalEmpresas');
+const listaEmpresas = document.getElementById('listaEmpresas');
+const contatosContainer = document.getElementById('contatosContainer'); // div C
 
 // Limpa o formulário
 function limparFormulario() {
   form.reset();
   document.getElementById('idEmpresaRevisao').value = '';
   contatosContainer.innerHTML = '';
-  contatosContainer.appendChild(criarContatoItem('', '', '', true));
+  contatosContainer.appendChild(criarContatoItem('', '', '', true, contatosContainer));
 }
 
-// Preenche formulário com dados
-function preencherFormulario(empresa, contatos = []) {
-  document.getElementById('idEmpresaRevisao').value = empresa.Id || '';
-  document.getElementById('nomeFantasia').value = empresa.NomeFantasia || '';
-  document.getElementById('razaoSocial').value = empresa.razao || '';
-  document.getElementById('cnpj').value = empresa.CNPJ || '';
-  document.getElementById('rua').value = empresa.Rua || '';
-  document.getElementById('numero').value = empresa.num || '';
-  document.getElementById('bairro').value = empresa.bairro || '';
-  document.getElementById('cidade').value = empresa.cidade || '';
-  document.getElementById('estado').value = empresa.UF || '';
-  document.getElementById('pais').value = empresa.pais || '';
-  document.getElementById('cep').value = empresa.CEP || '';
-
-  contatosContainer.innerHTML = '';
-  if (contatos.length > 0) {
-    contatos.forEach((c, i) => {
-      contatosContainer.appendChild(criarContatoItem(c.nome, c.email, c.telefone, i === 0));
-    });
-  } else {
-    contatosContainer.appendChild(criarContatoItem('', '', '', true));
-  }
-}
-
-// Adiciona contato
+// Evento para adicionar novo contato
 btnAddContato.addEventListener('click', () => {
-  contatosContainer.appendChild(criarContatoItem());
+  contatosContainer.appendChild(criarContatoItem('', '', '', false, contatosContainer));
 });
 
-// Revisar cadastro
+// Evento para revisar cadastro
 btnRevisar.addEventListener('click', async () => {
   try {
     const data = await buscarEmpresas();
@@ -123,10 +64,12 @@ btnRevisar.addEventListener('click', async () => {
             }
           }
 
-          preencherFormulario(latest, contatos);
+          // Chamada da função modularizada preenchendo o formulário
+          preencherFormulario(latest, contatos, contatosContainer, criarContatoItem);
 
         } catch {
-          preencherFormulario(empresa, []);
+          // Caso erro na busca das revisões, preenche com dados da empresa básica
+          preencherFormulario(empresa, [], contatosContainer, criarContatoItem);
         }
       });
 
@@ -140,12 +83,12 @@ btnRevisar.addEventListener('click', async () => {
   }
 });
 
-// Novo cadastro
+// Evento para novo cadastro - limpa o formulário
 btnNovoCadastro.addEventListener('click', () => {
   limparFormulario();
 });
 
-// Salvar dados
+// Evento para salvar dados
 form.addEventListener('submit', async e => {
   e.preventDefault();
 
