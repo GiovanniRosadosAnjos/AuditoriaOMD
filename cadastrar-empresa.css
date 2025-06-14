@@ -38,7 +38,7 @@ form {
 
 .divA, .divB {
     flex: 1; /* Dividem igualmente o espaço horizontal */
-    background-color: #efefa6; /* amarelo bem claro */
+    background-color: #fafa04; /* amarelo bem claro */
     padding: 15px;
     border-radius: 8px;
     box-shadow: 0 0 5px rgba(0,0,0,0.05);
@@ -122,7 +122,7 @@ input[type=tel] {
 
 /* Botão */
 button {
-    background-color: #4CAF50;
+    background-color: #0e0f00;
     color: white;
     border: none;
     padding: 10px 15px;
