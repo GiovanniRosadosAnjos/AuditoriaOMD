@@ -10,8 +10,10 @@
 
   <h1>Cadastrar Empresa</h1>
 
+
+
   <div class="buttons-container">
-    <button type="button" id="btnNovoCadastro">Cadastrar Nova Empresa</button>
+    <button type="button" id="btnNovoCadastro"> Cancelar operação  </button>
     <button type="button" id="btnRevisarCadastro">Revisar Cadastro</button>
   </div>
 
@@ -20,19 +22,19 @@
     <input type="hidden"     id="idEmpresaRevisao" name="idEmpresaRevisao" />
 
     <div class="div-container">
-      <div class="divA">                                                                  <!-- div A -->
+      <div class="divA">                                                 <!-- divA 0 -->
         <label for="nomeFantasia">Nome Fantasia</label>
-        <input type="text" id="nomeFantasia" name="nomeFantasia" required />
+        <input type="text" id="nomeFantasia" name="nomeFantasia" required />  
 
         <label for="razaoSocial">Razão Social</label>
         <input type="text" id="razaoSocial" name="razaoSocial" required />
 
         <label for="cnpj">CNPJ</label>
         <input type="text" id="cnpj" name="cnpj" required />
-      </div>
+      </div>                                                             <!-- divA 1 -->
 
-      <div class="divB">                                                     <!-- div B (INÍCIO) -->
-        <div class="form-row">                                                          <!-- Rua e nº. (na mesma linha) -->                                                              
+      <div class="divB">                                                 <!-- divB 0 -->
+        <div class="form-row">                                                <!-- Rua e nº. (na mesma linha -->
             <div class="form-group">                                                    
                 <label for="rua">Rua</label>
                 <input type="text" id="rua" name="rua" required />
@@ -44,7 +46,7 @@
             </div>
         </div>
     
-        <div class="form-row">                                                          <!-- Bairro, Cidade e Estado (na mesma linha) -->  
+        <div class="form-row">                                                <!-- Bairro, Cidade e Estado (na mesma linha) -->  
           <div class="form-group">
                 <label for="bairro">Bairro</label>
                 <input type="text" id="bairro" name="bairro" required />
@@ -61,7 +63,7 @@
           </div>
         </div>
 
-        <div class="form-row">                                                           <!-- País e CEP (na mesma linha) -->                                                            
+        <div class="form-row">                                                <!-- País e CEP (na mesma linha) -->
             <div class="form-group">                                                   
                 <label for="pais">País</label>
                 <input type="text" id="pais" name="pais" required />
@@ -72,33 +74,27 @@
                 <input type="text" id="cep" name="cep" required />
             </div>
         </div>
-      </div>                                                                 <!-- div B (FIM) -->
-
+      </div>                                                             <!-- divB 1 -->
 
     </div>
 
-    <div class="divC">                                                               <!-- div C -->
-      <h2>Contatos</h2>
+    <div class="divC">                                                   <!-- divC 0-->
+      Contatos
       <div id="contatosContainer">
-        <!-- Contatos adicionados dinamicamente aqui -->
-        <div class="divC-inputs contato-item">
+        <div class="divC-inputs contato-item">                                   <!-- Contatos adicionados dinamicamente aqui -->
           <div class="form-group">
-            <label>Nome</label>
-            <input type="text" name="contatoNome[]" />
-          </div>
-          <div class="form-group">
-            <label>E-mail</label>
-            <input type="email" name="contatoEmail[]" />
-          </div>
-          <div class="form-group">
-            <label>Telefone</label>
-            <input type="tel" name="contatoTelefone[]" />
-          </div>
-          <button type="button" class="btnRemoveContato" style="height: 36px; align-self: flex-end;">-</button>
+            <label>Nome</label>       <input type="text" name="contatoNome[]" /> </div> <div class="form-group">
+            <label>Cargo</label>      <input type="text" name="contatoCargo[]" /> </div> <div class="form-group">
+            <label>E-mail</label>     <input type="email" name="contatoEmail[]" />  </div>  <div class="form-group">
+            <label>Telefone</label>   <input type="tel" name="contatoTelefone[]" />
+          </div>           
+                  <button type="button" class="btnRemoveContato">-</button>
+
         </div>
+
       </div>
       <button type="button" id="btnAddContato">+ Adicionar Contato</button>
-    </div>
+    </div>                                                               <!-- divC 1-->
 
     <button type="submit">Salvar</button>
   </form>

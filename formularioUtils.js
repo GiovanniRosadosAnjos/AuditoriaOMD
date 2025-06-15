@@ -1,6 +1,7 @@
 // formularioUtils.js
 
 export function preencherFormulario(empresa, contatos = [], contatosContainer, criarContatoItem) {
+  
   document.getElementById('idEmpresaRevisao').value = empresa.Id || '';
   document.getElementById('nomeFantasia').value = empresa.NomeFantasia || '';
   document.getElementById('razaoSocial').value = empresa.razao || '';
@@ -16,9 +17,9 @@ export function preencherFormulario(empresa, contatos = [], contatosContainer, c
   contatosContainer.innerHTML = '';
   if (contatos.length > 0) {
     contatos.forEach((c, i) => {
-      contatosContainer.appendChild(criarContatoItem(c.nome, c.email, c.telefone, i === 0, contatosContainer));
+      contatosContainer.appendChild(criarContatoItem(c.nome, c.cargo, c.email, c.telefone, i === 0, contatosContainer));
     });
   } else {
-    contatosContainer.appendChild(criarContatoItem('', '', '', true, contatosContainer));
+    contatosContainer.appendChild(criarContatoItem('', '', '', '', true, contatosContainer));
   }
 }

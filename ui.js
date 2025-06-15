@@ -1,5 +1,6 @@
-import { criarContatoItem } from './contatoUtils.js';
-import { preencherFormulario } from './formularioUtils.js';
+import { criarContatoItem } from        './contatoUtils.js';
+import { preencherFormulario } from     './formularioUtils.js';
+import { limparFormulario } from         './cad-empr-limparForm.js';
 
 // Referência de elementos
 const btnRevisar = document.getElementById('btnRevisarCadastro');
@@ -11,17 +12,13 @@ const modal = document.getElementById('modalEmpresas');
 const listaEmpresas = document.getElementById('listaEmpresas');
 const contatosContainer = document.getElementById('contatosContainer'); // div C
 
-// Limpa o formulário
-function limparFormulario() {
-  form.reset();
-  document.getElementById('idEmpresaRevisao').value = '';
-  contatosContainer.innerHTML = '';
-  contatosContainer.appendChild(criarContatoItem('', '', '', true, contatosContainer));
-}
+
+
+
 
 // Evento para adicionar novo contato
 btnAddContato.addEventListener('click', () => {
-  contatosContainer.appendChild(criarContatoItem('', '', '', false, contatosContainer));
+  contatosContainer.appendChild(criarContatoItem('', '', '', '', false, contatosContainer));
 });
 
 // Evento para revisar cadastro
@@ -85,7 +82,7 @@ btnRevisar.addEventListener('click', async () => {
 
 // Evento para novo cadastro - limpa o formulário
 btnNovoCadastro.addEventListener('click', () => {
-  limparFormulario();
+  limparFormulario(form, contatosContainer, criarContatoItem);
 });
 
 // Evento para salvar dados
@@ -95,13 +92,14 @@ form.addEventListener('submit', async e => {
   const idRevisao = document.getElementById('idEmpresaRevisao').value;
 
   const nomes = [...document.querySelectorAll('input[name="contatoNome[]"]')].map(i => i.value.trim());
+  const cargos = [...document.querySelectorAll('input[name="contatoCargo[]"]')].map(i => i.value.trim());
   const emails = [...document.querySelectorAll('input[name="contatoEmail[]"]')].map(i => i.value.trim());
   const telefones = [...document.querySelectorAll('input[name="contatoTelefone[]"]')].map(i => i.value.trim());
 
   const contatos = [];
   for (let i = 0; i < nomes.length; i++) {
-    if (nomes[i] || emails[i] || telefones[i]) {
-      contatos.push({ nome: nomes[i], email: emails[i], telefone: telefones[i] });
+    if (nomes[i] || cargos[i] || emails[i] || telefones[i]) {
+       contatos.push({ nome: nomes[i], cargo: cargos[i], email: emails[i], telefone: telefones[i] });
     }
   }
 
@@ -138,7 +136,8 @@ form.addEventListener('submit', async e => {
 
     await salvarEmpresa(empresaObj);
     alert('Cadastro salvo com sucesso!');
-    limparFormulario();
+    limparFormulario(form, contatosContainer, criarContatoItem);
+    
   } catch (err) {
     console.error('Erro ao salvar:', err);
     alert('Erro ao salvar cadastro.');

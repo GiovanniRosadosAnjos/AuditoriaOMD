@@ -1,10 +1,9 @@
 body {
-    font-family: Garamond, Arial, sans-serif;
+    font-family: 'Century Gothic', Arial, sans-serif;
     background-color: #f9f9f9;
     margin: 0;
     padding: 20px 2cm;
     box-sizing: border-box;
-}
 
 h1 {
     text-align: center;
@@ -46,7 +45,7 @@ form {
 }
 
 .divC {
-    background-color: #efefa6; /* amarelo bem claro */
+    background-color: #fafa04; /* amarelo bem claro */
     padding: 15px;
     border-radius: 8px;
     box-shadow: 0 0 5px rgba(0,0,0,0.05);
@@ -122,6 +121,8 @@ input[type=tel] {
 
 /* Botão */
 button {
+
+    font-family: 'Century Gothic', sans-serif;
     background-color: #0e0f00;
     color: white;
     border: none;
@@ -132,7 +133,7 @@ button {
 }
 
 button:hover {
-    background-color: #45a049;
+    background-color: #7e7f7a;
 }
 
 /* Ajuste do input número e rua (divB) */
@@ -143,3 +144,13 @@ button:hover {
 .divB .form-row .form-group:nth-child(2) {
     flex: 1 1 80px; /* número com largura fixa e limitada */
 }
+
+.btnRemoveContato {
+    background-color: #c42801; 
+    height: 36 px;
+    align-self: flex-end;   
+}
+
+
+}  /* Body 1 */
+
