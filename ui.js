@@ -1,27 +1,20 @@
-import { criarContatoItem } from        './contatoUtils.js';
-import { preencherFormulario } from     './formularioUtils.js';
-import { limparFormulario } from         './cad-empr-limparForm.js';
+import { criarContatoItem } from './01_00_CriarContato.js';
+import { preencherFormulario } from './01_00_preencherForm.js';
+import { limparFormulario } from './01_00_LimparForm.js';
+import { ModalEmpresas } from './01_00_ModalEmpresas.js';
 
-// Referência de elementos
 const btnRevisar = document.getElementById('btnRevisarCadastro');
-const btnNovoCadastro = document.getElementById('btnNovoCadastro');
+const bntCancelarOperacao = document.getElementById('bntCancelarOperação');
 const btnAddContato = document.getElementById('btnAddContato');
-
-const form = document.getElementById('formEmpresa');                    // div: A, B e C
-const modal = document.getElementById('modalEmpresas');
+const form = document.getElementById('formEmpresa');
+const contatosContainer = document.getElementById('contatosContainer');
 const listaEmpresas = document.getElementById('listaEmpresas');
-const contatosContainer = document.getElementById('contatosContainer'); // div C
+const modal = document.getElementById('modalEmpresas');
 
-
-
-
-
-// Evento para adicionar novo contato
 btnAddContato.addEventListener('click', () => {
   contatosContainer.appendChild(criarContatoItem('', '', '', '', false, contatosContainer));
 });
 
-// Evento para revisar cadastro
 btnRevisar.addEventListener('click', async () => {
   try {
     const data = await buscarEmpresas();
@@ -38,39 +31,14 @@ btnRevisar.addEventListener('click', async () => {
       }
     });
 
-    listaEmpresas.innerHTML = '';
-    empresasMap.forEach(empresa => {
-      const div = document.createElement('div');
-      div.textContent = `ID: ${empresa.Id} | Nome: ${empresa.NomeFantasia}`;
-      div.classList.add('empresa-item');
-
-      div.addEventListener('dblclick', async () => {
-        modal.close();
-        document.getElementById('idEmpresaRevisao').value = empresa.Id;
-
-        try {
-          const revisoes = await buscarRevisoesPorId(empresa.Id);
-          const latest = revisoes.reduce((acc, curr) => parseInt(curr.Rev) > parseInt(acc.Rev) ? curr : acc, revisoes[0]);
-
-          let contatos = [];
-          if (latest.Contatos) {
-            try {
-              contatos = JSON.parse(latest.Contatos);
-            } catch {
-              contatos = [];
-            }
-          }
-
-          // Chamada da função modularizada preenchendo o formulário
-          preencherFormulario(latest, contatos, contatosContainer, criarContatoItem);
-
-        } catch {
-          // Caso erro na busca das revisões, preenche com dados da empresa básica
-          preencherFormulario(empresa, [], contatosContainer, criarContatoItem);
-        }
-      });
-
-      listaEmpresas.appendChild(div);
+    ModalEmpresas.preencherListaEmpresas({
+      listaEmpresas,
+      empresasMap,
+      modal,
+      contatosContainer,
+      preencherFormulario,
+      criarContatoItem,
+      buscarRevisoesPorId
     });
 
     modal.showModal();
@@ -80,12 +48,10 @@ btnRevisar.addEventListener('click', async () => {
   }
 });
 
-// Evento para novo cadastro - limpa o formulário
-btnNovoCadastro.addEventListener('click', () => {
+bntCancelarOperacao.addEventListener('click', () => {
   limparFormulario(form, contatosContainer, criarContatoItem);
 });
 
-// Evento para salvar dados
 form.addEventListener('submit', async e => {
   e.preventDefault();
 
@@ -99,7 +65,7 @@ form.addEventListener('submit', async e => {
   const contatos = [];
   for (let i = 0; i < nomes.length; i++) {
     if (nomes[i] || cargos[i] || emails[i] || telefones[i]) {
-       contatos.push({ nome: nomes[i], cargo: cargos[i], email: emails[i], telefone: telefones[i] });
+      contatos.push({ nome: nomes[i], cargo: cargos[i], email: emails[i], telefone: telefones[i] });
     }
   }
 
@@ -130,16 +96,99 @@ form.addEventListener('submit', async e => {
       cidade: document.getElementById('cidade').value,
       UF: document.getElementById('estado').value,
       pais: document.getElementById('pais').value,
-      CEP: document.getElementById('cep').value,
-      Contatos: JSON.stringify(contatos)
+      CEP: document.getElementById('cep').value
     };
 
     await salvarEmpresa(empresaObj);
+
+    const dataHoraAtual = new Date().toLocaleString();
+    for (const c of contatos) {
+      const contatoObj = {
+        Id: novoId.toString(),
+        Rev: novaRev.toString(),
+        nome: c.nome,
+        funcao: c.cargo,
+        email: c.email,
+        telefone: c.telefone,
+        dataCadastro: dataHoraAtual
+      };
+      await salvarContato(contatoObj);
+    }
+
     alert('Cadastro salvo com sucesso!');
     limparFormulario(form, contatosContainer, criarContatoItem);
-    
   } catch (err) {
     console.error('Erro ao salvar:', err);
     alert('Erro ao salvar cadastro.');
   }
 });
+
+// Função auxiliar para salvar na aba Contato
+async function salvarContato(dados) {
+  const res = await fetch('https://sheetdb.io/api/v1/ygjx7hr6r521t?sheet=Contato', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ data: dados })
+  });
+  if (!res.ok) throw new Error('Erro ao salvar contato');
+  return await res.json();
+}
+
+// Função para buscar contatos na aba Contato por Id
+async function buscarContatosPorId(id) {
+  const res = await fetch(`https://sheetdb.io/api/v1/ygjx7hr6r521t/search?Id=${id}&sheet=Contato`);
+  if (!res.ok) throw new Error('Erro ao buscar contatos');
+  return await res.json();
+}
+
+// Sobrescreve a função preencherListaEmpresas do ModalEmpresas para incluir carregamento de contatos
+ModalEmpresas.preencherListaEmpresas = function({
+  listaEmpresas,
+  empresasMap,
+  modal,
+  contatosContainer,
+  preencherFormulario,
+  criarContatoItem,
+  buscarRevisoesPorId
+}) {
+  listaEmpresas.innerHTML = '';
+
+  empresasMap.forEach(empresa => {
+    const div = document.createElement('div');
+    div.textContent = `ID: ${empresa.Id} | ${empresa.NomeFantasia}`;
+    div.classList.add('empresa-item');
+
+    div.addEventListener('dblclick', async () => {
+      modal.close();
+      document.getElementById('idEmpresaRevisao').value = empresa.Id;
+
+      try {
+        const revisoes = await buscarRevisoesPorId(empresa.Id);
+        const latest = revisoes.reduce((acc, curr) =>
+          parseInt(curr.Rev) > parseInt(acc.Rev) ? curr : acc, revisoes[0]);
+
+        let contatos = [];
+        try {
+          const contatosRaw = await buscarContatosPorId(empresa.Id);
+          if (Array.isArray(contatosRaw) && contatosRaw.length > 0) {
+            const maxRev = Math.max(...contatosRaw.map(c => parseInt(c.Rev)));
+            contatos = contatosRaw.filter(c => parseInt(c.Rev) === maxRev).map(c => ({
+              nome: c.nome || '',
+              cargo: c.funcao || '',
+              email: c.email || '',
+              telefone: c.telefone || ''
+            }));
+          }
+        } catch {
+          contatos = [];
+        }
+
+        preencherFormulario(latest, contatos, contatosContainer, criarContatoItem);
+      } catch {
+        preencherFormulario(empresa, [], contatosContainer, criarContatoItem);
+      }
+    });
+
+    listaEmpresas.appendChild(div);
+  });
+};

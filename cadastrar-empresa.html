@@ -6,14 +6,12 @@
   <title>Cadastrar Empresa</title>
   <link rel="stylesheet" href="cadastrar-empresa.css" /> <!-- seu css aqui, ou embedado -->
 </head>
-<body>
+<body>        
 
-  <h1>Cadastrar Empresa</h1>
-
-
+  <h3>Cadastrar Empresa</h3>
 
   <div class="buttons-container">
-    <button type="button" id="btnNovoCadastro"> Cancelar operação  </button>
+    <button type="button" id="bntCancelarOperação"> Cancelar operação  </button>
     <button type="button" id="btnRevisarCadastro">Revisar Cadastro</button>
   </div>
 
@@ -75,7 +73,6 @@
             </div>
         </div>
       </div>                                                             <!-- divB 1 -->
-
     </div>
 
     <div class="divC">                                                   <!-- divC 0-->
@@ -99,16 +96,14 @@
     <button type="submit">Salvar</button>
   </form>
 
-  <dialog id="modalEmpresas">
+  <dialog id="modalEmpresas"> <!-- MEMO: modal -->
     <h3>Selecione a empresa para revisar (duplo clique)</h3>
-    <div id="listaEmpresas"></div>
+    <div id="listaEmpresas"></div>  <!-- MEMO: listaEmpresas -->
     <button type="button" onclick="document.getElementById('modalEmpresas').close()">Fechar</button>
   </dialog>
 
   
   <script src="dados.js"></script>
   <script type="module" src="ui.js"></script>
-
-
 </body>
 </html>
