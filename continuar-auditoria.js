@@ -1,1 +1,0 @@
-document.getElementById('formContinuarAuditoria').addEventListener('submit', function(e) { e.preventDefault(); alert('Continuando auditoria...'); });
