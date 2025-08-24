@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cadastrar Empresa</title>
+  <link rel="stylesheet" href="01_00_0_estilo.css" />
+</head>
+<body>        
+
+  <h3>Cadastrar Empresa</h3>
+
+  <div class="buttons-container">
+    <button type="button" id="bntCancelarOperacao">Cancelar Operação</button>
+    <button type="button" id="btnRevisarCadastro">Consultar / Revisar Cadastro</button>
+  </div>
+
+  <form id="formEmpresa">
+
+    <div id="formActions" style="display: flex; gap: 10px; padding-bottom: 15px; border-bottom: 1px solid #ccc; margin-bottom: 15px;">
+      <button type="button" id="btnSalvarNovo">Salvar Novo Cadastro</button>
+      <button type="button" id="btnHabilitarEdicao" style="display: none; background-color: #28a745;">Habilitar Edição</button>
+      <button type="button" id="btnSalvarEdicao" style="display: none; background-color: #007bff;">Salvar Alterações</button>
+      <button type="button" id="btnCancelarEdicao" style="display: none; background-color: #6c757d;">Cancelar Edição</button>
+    </div>
+
+    <input type="hidden" id="idEmpresaRevisao" name="idEmpresaRevisao" />
+
+    <div class="div-container">
+      <div class="divA">
+        <label for="nomeFantasia">Nome Fantasia</label>
+        <input type="text" id="nomeFantasia" name="nomeFantasia" required />  
+
+        <label for="razaoSocial">Razão Social</label>
+        <input type="text" id="razaoSocial" name="razaoSocial" required />
+
+        <label for="cnpj">CNPJ</label>
+        <input type="text" id="cnpj" name="cnpj" required />
+      </div>
+
+      <div class="divB">
+        <div class="form-row">
+            <div class="form-group">                                                    
+                <label for="rua">Rua</label>
+                <input type="text" id="rua" name="rua" required />
+            </div>
+            
+            <div class="form-group" style="flex: 0 1 120px;">
+                <label for="numero">Número</label>
+                <input type="text" id="numero" name="numero" required />
+            </div>
+        </div>
+    
+        <div class="form-row">
+          <div class="form-group">
+                <label for="bairro">Bairro</label>
+                <input type="text" id="bairro" name="bairro" required />
+          </div>
+
+          <div class="form-group">
+                <label for="cidade">Cidade</label>
+                <input type="text" id="cidade" name="cidade" required />
+          </div>
+
+          <div class="form-group" style="flex: 0 1 100px;">
+                <label for="estado">Estado (UF)</label>
+                <input type="text" id="estado" name="estado" required />
+          </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">                                                   
+                <label for="pais">País</label>
+                <input type="text" id="pais" name="pais" required />
+            </div>
+            
+            <div class="form-group">                                                    
+                <label for="cep">CEP</label>
+                <input type="text" id="cep" name="cep" required />
+            </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="divC">
+      <h4>Contatos</h4>
+      <div id="contatosContainer">
+        <!-- Contatos são adicionados dinamicamente aqui -->
+      </div>
+      <button type="button" id="btnAddContato">+ Adicionar Contato</button>
+    </div>
+
+    <div class="divD">
+      <h4>Documentação Legal</h4>
+      
+      <div id="licencaSanitariaContainer" class="doc-container">
+        <span id="licencaSanitariaStatus">Licença Sanitária: Não preenchida</span>
+        <button type="button" id="btnAbrirModalLicenca">Adicionar / Editar</button>
+      </div>
+    
+      <div id="bombeirosContainer" class="doc-container">
+        <span id="bombeirosStatus">Licença de Bombeiros: Não preenchida</span>
+        <button type="button" id="btnAbrirModalBombeiros">Adicionar / Editar</button>
+      </div>
+    
+      <input type="hidden" id="licencaCEVS" />
+      <input type="hidden" id="licencaValidade" />
+      <input type="hidden" id="licencaSubgrupo" />
+      
+      <input type="hidden" id="bombeirosTipo" />
+      <input type="hidden" id="bombeirosNumero" />
+      <input type="hidden" id="bombeirosValidade" />
+    </div>
+  </form>
+
+  <dialog id="modalEmpresas">
+    <h3>Selecione a empresa (duplo clique)</h3>
+    <input type="text" id="filtroEmpresa" placeholder="Digite para filtrar por nome..." style="width: 100%; margin-bottom: 10px; padding: 8px; box-sizing: border-box;">
+    <div id="listaEmpresas"></div>
+    <button type="button" id="btnFecharModalEmpresas">Fechar</button>
+  </dialog>
+
+  <dialog id="modalLicencaSanitaria">
+    <div class="modal-content">
+      <h3>Preenchimento da Licença Sanitária</h3>
+      <div class="modal-layout">
+        <div class="modal-form">
+          <h4>Dados da Licença</h4>
+          <label for="modalLicencaCEVS">Nº CEVS:</label>
+          <input type="text" id="modalLicencaCEVS">
+          <label for="modalLicencaValidade">Validade:</label>
+          <input type="date" id="modalLicencaValidade">
+          <label for="modalLicencaSubgrupo">Subgrupo (dê um duplo clique no CNAE ao lado):</label>
+          <input type="text" id="modalLicencaSubgrupo">
+          <div class="modal-actions">
+            <button type="button" id="btnSalvarLicenca">Salvar Licença</button>
+            <button type="button" id="btnCancelarLicenca">Cancelar</button>
+          </div>
+        </div>
+        <div class="modal-consulta">
+          <h4>Regras para Consulta</h4>
+          <p>A <strong>Licença Sanitária</strong> emitida pela VISA é o primeiro documento que a empresa deve obter.</p>
+          <table>
+            <thead><tr><th>SUBGRUPO</th><th>AGRUPAMENTO</th><th>ATIVIDADE ECONÔMICA-CNAE</th></tr></thead>
+            <tbody>
+              <tr><td>FABRIL</td><td>INDÚSTRIA DE PRODUTOS PARA A SAÚDE</td><td class="cnae-cell"><strong>2660-4/00</strong> FABRICAÇÃO DE APARELHOS ELETROMÉDICOS E ELETROTERAPÊUTICOS E EQUIPAMENTOS DE IRRADIAÇÃO</td></tr>
+              <tr><td>DISTRIBUIDORA/IMPORTADORA</td><td>COMÉRCIO ATACADISTA DE PRODUTOS PARA A SAÚDE</td><td class="cnae-cell"><strong>4645-1/01</strong> COMÉRCIO ATACADISTA DE INSTRUMENTOS E MATERIAIS PARA USO MÉDICO, CIRÚRGICO, HOSPITALAR E DE LABORATÓRIOS</td></tr>
+              <tr><td>DISTRIBUIDORA/IMPORTADORA</td><td>COMÉRCIO ATACADISTA DE PRODUTOS PARA A SAÚDE</td><td class="cnae-cell"><strong>4664-8/00</strong> COMÉRCIO ATACADISTA DE MÁQUINAS, APARELHOS E EQUIPAMENTOS PARA USO ODONO-MÉDICO-HOSPITALAR; PARTE E PEÇAS</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- MODAL BOMBEIROS QUE ESTAVA FALTANDO -->
+  <dialog id="modalBombeiros">
+    <div class="modal-content">
+      <h3>Preenchimento da Licença de Bombeiros</h3>
+      <div class="modal-layout">
+
+
+        <div class="modal-form">
+          <h4>Dados da Licença</h4>
+          
+          <!-- CAMPO ALTERADO DE SELECT PARA INPUT -->
+          <label for="modalBombeirosTipo">Tipo de Licença (dê um duplo clique na tabela ao lado):</label>
+          <input type="text" id="modalBombeirosTipo" style="width: 100%; margin-bottom: 10px;" readonly>
+          
+          <label for="modalBombeirosNumero">Número:</label>
+          <input type="text" id="modalBombeirosNumero" style="width: 100%; margin-bottom: 10px;">
+          
+          <label for="modalBombeirosValidade">Validade:</label>
+          <input type="date" id="modalBombeirosValidade" style="width: 100%; margin-bottom: 20px;">
+          
+          <div class="modal-actions">
+            <button type="button" id="btnSalvarBombeiros">Salvar Licença</button>
+            <button type="button" id="btnCancelarBombeiros">Cancelar</button>
+          </div>
+        </div>
+
+
+
+
+        <div class="modal-consulta">
+          <h4>Regras para Consulta</h4>
+          <p>A principal diferença entre o <strong>AVCB</strong> e o <strong>CLCB</strong> é o tipo de edificação.</p>
+
+          
+
+
+
+
+          <!-- Tabela BOMBEIROS -->
+                   
+          <table>
+            <thead>
+              <tr>
+                <th>Tipo</th>
+                <th>Risco</th>
+                <th>Exemplos</th>
+              </tr>
+            </thead>
+          
+            
+
+            <tbody>
+              <!-- Classe movida do <tr> para o <td> e cursor adicionado -->
+              <tr data-tipo="AVCB">
+                <td class="bombeiros-tipo-cell" style="cursor: pointer;">AVCB</td>
+                <td class="bombeiros-tipo-cell" style="cursor: pointer;">Médio e alto risco</td>
+                <td class="bombeiros-tipo-cell" style="cursor: pointer;">Fábricas, hospitais</td>
+              </tr>
+              <!-- Classe movida do <tr> para o <td> e cursor adicionado -->
+              <tr data-tipo="CLCB">
+                <td class="bombeiros-tipo-cell" style="cursor: pointer;">CLCB</td>
+                <td class="bombeiros-tipo-cell" style="cursor: pointer;">Baixo risco</td>
+                <td class="bombeiros-tipo-cell" style="cursor: pointer;">Pequenas lojas, comércios</td>
+              </tr>
+            </tbody>
+
+
+          </table>
+
+
+
+
+          <p style="margin-top: 15px;"><strong>Obrigatório para:</strong> construção, reforma, mudança de ocupação, ampliação, regularização e construções provisórias.</p>
+        </div>
+      </div>
+    </div>
+  </dialog>
+
+  <script type="module" src="01_00_0_principal.js"></script>
+</body>
+</html>
