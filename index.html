@@ -120,38 +120,7 @@
     <button type="button" id="btnFecharModalEmpresas">Fechar</button>
   </dialog>
 
-  <dialog id="modalLicencaSanitaria">
-    <div class="modal-content">
-      <h3>Preenchimento da Licença Sanitária</h3>
-      <div class="modal-layout">
-        <div class="modal-form">
-          <h4>Dados da Licença</h4>
-          <label for="modalLicencaCEVS">Nº CEVS:</label>
-          <input type="text" id="modalLicencaCEVS">
-          <label for="modalLicencaValidade">Validade:</label>
-          <input type="date" id="modalLicencaValidade">
-          <label for="modalLicencaSubgrupo">Subgrupo (dê um duplo clique no CNAE ao lado):</label>
-          <input type="text" id="modalLicencaSubgrupo">
-          <div class="modal-actions">
-            <button type="button" id="btnSalvarLicenca">Salvar Licença</button>
-            <button type="button" id="btnCancelarLicenca">Cancelar</button>
-          </div>
-        </div>
-        <div class="modal-consulta">
-          <h4>Regras para Consulta</h4>
-          <p>A <strong>Licença Sanitária</strong> emitida pela VISA é o primeiro documento que a empresa deve obter.</p>
-          <table>
-            <thead><tr><th>SUBGRUPO</th><th>AGRUPAMENTO</th><th>ATIVIDADE ECONÔMICA-CNAE</th></tr></thead>
-            <tbody>
-              <tr><td>FABRIL</td><td>INDÚSTRIA DE PRODUTOS PARA A SAÚDE</td><td class="cnae-cell"><strong>2660-4/00</strong> FABRICAÇÃO DE APARELHOS ELETROMÉDICOS E ELETROTERAPÊUTICOS E EQUIPAMENTOS DE IRRADIAÇÃO</td></tr>
-              <tr><td>DISTRIBUIDORA/IMPORTADORA</td><td>COMÉRCIO ATACADISTA DE PRODUTOS PARA A SAÚDE</td><td class="cnae-cell"><strong>4645-1/01</strong> COMÉRCIO ATACADISTA DE INSTRUMENTOS E MATERIAIS PARA USO MÉDICO, CIRÚRGICO, HOSPITALAR E DE LABORATÓRIOS</td></tr>
-              <tr><td>DISTRIBUIDORA/IMPORTADORA</td><td>COMÉRCIO ATACADISTA DE PRODUTOS PARA A SAÚDE</td><td class="cnae-cell"><strong>4664-8/00</strong> COMÉRCIO ATACADISTA DE MÁQUINAS, APARELHOS E EQUIPAMENTOS PARA USO ODONO-MÉDICO-HOSPITALAR; PARTE E PEÇAS</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  </dialog>
+
 
   <!-- MODAL BOMBEIROS QUE ESTAVA FALTANDO -->
   <dialog id="modalBombeiros">
@@ -230,6 +199,74 @@
       </div>
     </div>
   </dialog>
+
+
+  <!-- NOVO MODAL DE GERENCIAMENTO DE LICENÇAS SANITÁRIAS -->
+  <dialog id="modalGerenciarLicencas">
+    <div class="modal-content">
+      <h3>Gerenciar Licenças Sanitárias</h3>
+      <div class="modal-layout">
+        
+        <!-- Lado Esquerdo: Formulário para adicionar nova licença -->
+        <div class="modal-form">
+          <h4>Adicionar Nova Licença</h4>
+          <label for="licencaCEVS">Nº CEVS:</label>
+          <input type="text" id="licencaCEVS_input">
+          
+          <label for="licencaValidade">Validade:</label>
+          <input type="date" id="licencaValidade_input">
+          
+          <label for="licencaCNAE">CNAE (dê um duplo clique na tabela ao lado):</label>
+          <input type="text" id="licencaCNAE_input" readonly>
+          
+          <div class="modal-actions">
+            <button type="button" id="btnAdicionarLicencaNaLista">Adicionar à Lista</button>
+          </div>
+        </div>
+
+        <!-- Lado Direito: Lista de licenças e tabela de consulta -->
+        <div class="modal-consulta">
+          <h4>Licenças Adicionadas</h4>
+          <div id="listaLicencasContainer" style="min-height: 100px; border: 1px solid #ccc; padding: 10px; margin-bottom: 20px; border-radius: 4px;">
+            <!-- A lista de licenças será inserida aqui pelo JavaScript -->
+          </div>
+
+          <h4>Regras para Consulta</h4>
+          <table>
+            <thead>
+              <tr><th>SUBGRUPO</th><th>AGRUPAMENTO</th><th>ATIVIDADE ECONÔMICA-CNAE</th></tr>
+            </thead>
+            <tbody>
+              <tr class="cnae-row-selector" data-cnae="2660-4/00">
+                <td>FABRIL</td>
+                <td>INDÚSTRIA DE PRODUTOS PARA A SAÚDE</td>
+                <td><strong>2660-4/00</strong> FABRICAÇÃO DE APARELHOS ELETROMÉDICOS...</td>
+              </tr>
+              <tr class="cnae-row-selector" data-cnae="4645-1/01">
+                <td>DISTRIBUIDORA/IMPORTADORA</td>
+                <td>COMÉRCIO ATACADISTA DE PRODUTOS PARA A SAÚDE</td>
+                <td><strong>4645-1/01</strong> COMÉRCIO ATACADISTA DE INSTRUMENTOS E MATERIAIS...</td>
+              </tr>
+              <tr class="cnae-row-selector" data-cnae="4664-8/00">
+                <td>DISTRIBUIDORA/IMPORTADORA</td>
+                <td>COMÉRCIO ATACADISTA DE PRODUTOS PARA A SAÚDE</td>
+                <td><strong>4664-8/00</strong> COMÉRCIO ATACADISTA DE MÁQUINAS, APARELHOS...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-actions" style="justify-content: flex-end;">
+        <button type="button" id="btnFecharModalLicencas">Fechar</button>
+      </div>
+    </div>
+  </dialog>
+
+
+
+
+
+
 
   <script type="module" src="01_00_0_principal.js"></script>
 </body>

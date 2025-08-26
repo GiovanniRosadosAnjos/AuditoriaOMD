@@ -1,3 +1,5 @@
+// 01_00_9_enviarDados.js
+
 const endpoint = 'https://sheetdb.io/api/v1/ygjx7hr6r521t';
 
 async function buscarEmpresas( ) {
@@ -38,10 +40,25 @@ async function buscarContatosPorId(id) {
   return await res.json();
 }
 
+// ===================================================================
+// --- FUNÇÃO CORRIGIDA E ADICIONADA ---
+// Salva uma licença sanitária na aba correta.
+async function salvarLicenca(dados) {
+  const res = await fetch(`${endpoint}?sheet=LicencaSanitaria`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ data: dados })
+  });
+  if (!res.ok) throw new Error('Erro ao salvar licença sanitária');
+  return await res.json();
+}
+// ===================================================================
+
 export { 
   buscarEmpresas, 
   buscarRevisoesPorId, 
   salvarEmpresa, 
   salvarContato, 
-  buscarContatosPorId 
+  buscarContatosPorId,
+  salvarLicenca // <-- Exporta a nova função
 };

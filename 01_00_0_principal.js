@@ -1,7 +1,15 @@
 // 01_00_0_principal.js
 
 import { criarContatoItem } from './01_00_CriarContato.js';
-import { buscarEmpresas, salvarEmpresa, salvarContato, buscarContatosPorId, buscarRevisoesPorId } from './01_00_9_enviarDados.js';
+// --- IMPORTAÇÃO CORRIGIDA ---
+import { 
+  buscarEmpresas, 
+  salvarEmpresa, 
+  salvarContato, 
+  buscarContatosPorId, 
+  buscarRevisoesPorId,
+  salvarLicenca // <-- Importa a nova função
+} from './01_00_9_enviarDados.js';
 
 // --- ELEMENTOS GLOBAIS ---
 const form = document.getElementById('formEmpresa');
@@ -17,6 +25,9 @@ const btnSalvarNovo = document.getElementById('btnSalvarNovo');
 const btnHabilitarEdicao = document.getElementById('btnHabilitarEdicao');
 const btnSalvarEdicao = document.getElementById('btnSalvarEdicao');
 const btnCancelarEdicao = document.getElementById('btnCancelarEdicao');
+
+// --- VARIÁVEL GLOBAL PARA ARMAZENAR LICENÇAS TEMPORARIAMENTE ---
+let licencaSanitariaStore = [];
 
 // =================================================================================
 // --- LÓGICA DE CONTROLE DO FORMULÁRIO (CONSOLIDADA) ---
@@ -36,10 +47,8 @@ function limparFormulario() {
   contatosContainer.innerHTML = '';
   contatosContainer.appendChild(criarContatoItem('', '', '', '', true, contatosContainer));
 
-  // Limpa Licença Sanitária
-  document.getElementById('licencaCEVS').value = '';
-  document.getElementById('licencaValidade').value = '';
-  document.getElementById('licencaSubgrupo').value = '';
+  // Limpa Licença Sanitária (agora o array e o status)
+  licencaSanitariaStore = [];
   const licencaStatus = document.getElementById('licencaSanitariaStatus');
   licencaStatus.textContent = 'Licença Sanitária: Não preenchida';
   licencaStatus.style.color = 'black';
@@ -59,7 +68,7 @@ function limparFormulario() {
   btnCancelarEdicao.style.display = 'none';
 }
 
-function preencherFormulario(empresa, contatos) {
+function preencherFormulario(empresa, contatos, licencas) {
   document.getElementById('idEmpresaRevisao').value = empresa.Id || '';
   document.getElementById('nomeFantasia').value = empresa.NomeFantasia || '';
   document.getElementById('razaoSocial').value = empresa.razao || '';
@@ -82,27 +91,16 @@ function preencherFormulario(empresa, contatos) {
     contatosContainer.appendChild(criarContatoItem('', '', '', '', true, contatosContainer));
   }
 
-  // Preenche Licença Sanitária
-  const cevs = empresa.Licenca_Sanitaria_CEVS || '';
-  const validadeSanitaria = empresa.Licenca_Sanitaria_Validade || '';
-  const cnae = empresa.Licenca_Sanitaria_CNAE || '';
-  document.getElementById('licencaCEVS').value = cevs;
-  document.getElementById('licencaValidade').value = validadeSanitaria;
-  document.getElementById('licencaSubgrupo').value = cnae;
+  licencaSanitariaStore = licencas || [];
   const licencaStatus = document.getElementById('licencaSanitariaStatus');
-  if (validadeSanitaria) {
-    const dataFormatada = new Date(validadeSanitaria + 'T00:00:00').toLocaleDateString('pt-BR');
-    licencaStatus.textContent = `Licença Sanitária: Preenchida (Validade: ${dataFormatada})`;
+  if (licencaSanitariaStore.length > 0) {
+    licencaStatus.textContent = `Licença Sanitária: ${licencaSanitariaStore.length} licença(s) registrada(s).`;
     licencaStatus.style.color = 'green';
-  } else if (cevs || cnae) {
-    licencaStatus.textContent = 'Licença Sanitária: Preenchida (sem validade)';
-    licencaStatus.style.color = 'orange';
   } else {
     licencaStatus.textContent = 'Licença Sanitária: Não preenchida';
     licencaStatus.style.color = 'black';
   }
 
-  // Preenche Licença de Bombeiros
   const tipoBombeiros = empresa.Bombeiros_Tipo || '';
   const numeroBombeiros = empresa.Bombeiros_Numero || '';
   const validadeBombeiros = empresa.Bombeiros_Validade || '';
@@ -159,6 +157,7 @@ async function salvarDadosDoFormulario() {
       const revs = data.filter(r => parseInt(r.Id) === novoId).map(r => parseInt(r.Rev));
       novaRev = revs.length > 0 ? Math.max(...revs) + 1 : 0;
     }
+
     const empresaObj = {
       Id: novoId.toString(), Rev: novaRev.toString(), NomeFantasia: document.getElementById('nomeFantasia').value,
       razao: document.getElementById('razaoSocial').value, CNPJ: document.getElementById('cnpj').value,
@@ -166,14 +165,12 @@ async function salvarDadosDoFormulario() {
       bairro: document.getElementById('bairro').value, cidade: document.getElementById('cidade').value,
       UF: document.getElementById('estado').value, pais: document.getElementById('pais').value,
       CEP: document.getElementById('cep').value, 
-      Licenca_Sanitaria_CEVS: document.getElementById('licencaCEVS').value,
-      Licenca_Sanitaria_Validade: document.getElementById('licencaValidade').value, 
-      Licenca_Sanitaria_CNAE: document.getElementById('licencaSubgrupo').value,
       Bombeiros_Tipo: document.getElementById('bombeirosTipo').value,
       Bombeiros_Numero: document.getElementById('bombeirosNumero').value,
       Bombeiros_Validade: document.getElementById('bombeirosValidade').value
     };
     await salvarEmpresa(empresaObj);
+
     const dataHoraAtual = new Date().toLocaleString();
     for (const c of contatos) {
       const contatoObj = {
@@ -182,6 +179,22 @@ async function salvarDadosDoFormulario() {
       };
       await salvarContato(contatoObj);
     }
+
+    // ===================================================================
+    // --- LÓGICA DE SALVAMENTO CORRIGIDA ---
+    // Usa a função 'salvarLicenca' importada.
+    for (const licenca of licencaSanitariaStore) {
+        const licencaObj = {
+            Id: novoId.toString(),
+            Rev: novaRev.toString(),
+            CEVS: licenca.cevs,
+            Validade: licenca.validade,
+            CNAE: licenca.cnae
+        };
+        await salvarLicenca(licencaObj);
+    }
+    // ===================================================================
+
     alert('Cadastro salvo com sucesso!');
     limparFormulario();
   } catch (err) {
@@ -189,8 +202,6 @@ async function salvarDadosDoFormulario() {
     alert('Erro ao salvar cadastro.');
   }
 }
-
-// --- EVENT LISTENERS ---
 
 form.addEventListener('submit', e => e.preventDefault());
 btnSalvarNovo.addEventListener('click', salvarDadosDoFormulario);
@@ -213,9 +224,6 @@ btnCancelarEdicao.addEventListener('click', () => {
   alert("Edição cancelada. O formulário foi limpo.");
 });
 
-
-
-
 btnConsultar.addEventListener('click', async () => {
   try {
     const data = await buscarEmpresas();
@@ -234,10 +242,8 @@ btnConsultar.addEventListener('click', async () => {
     const empresasArray = Array.from(empresasMap.values());
     empresasArray.sort((a, b) => a.NomeFantasia.localeCompare(b.NomeFantasia));
 
-    // --- LÓGICA DE RENDERIZAÇÃO E EVENTOS ---
     const renderizarLista = (empresasParaRenderizar) => {
-        // Limpa a lista antiga antes de renderizar a nova
-        listaEmpresas.innerHTML = ''; 
+        listaEmpresas.innerHTML = '';
         empresasParaRenderizar.forEach(empresa => {
             const div = document.createElement('div');
             div.textContent = `${empresa.NomeFantasia.padEnd(40, ' ')} | ID: ${empresa.Id.padStart(2, '0')} | Rev: ${empresa.Rev.padStart(2, '0')}`;
@@ -245,31 +251,40 @@ btnConsultar.addEventListener('click', async () => {
             div.style.fontFamily = 'monospace';
             div.style.whiteSpace = 'pre';
             
-            // Adiciona o evento de duplo clique
             div.addEventListener('dblclick', async () => {
                 modalEmpresas.close();
                 try {
                     const selectedRevision = empresa; 
                     let contatos = [];
+                    let licencas = [];
                     try {
                         const contatosRaw = await buscarContatosPorId(selectedRevision.Id);
-                        if (Array.isArray(contatosRaw) && contatosRaw.length > 0) {
+                        if (Array.isArray(contatosRaw)) {
                             contatos = contatosRaw
                                 .filter(c => c.Rev === selectedRevision.Rev)
                                 .map(c => ({ nome: c.nome || '', cargo: c.funcao || '', email: c.email || '', telefone: c.telefone || '' }));
                         }
-                    } catch { contatos = []; }
-                    preencherFormulario(selectedRevision, contatos);
+                        
+                        // --- LÓGICA DE BUSCA DE LICENÇAS CORRIGIDA ---
+                        const licencasRaw = await fetch(`https://sheetdb.io/api/v1/ygjx7hr6r521t/search?Id=${selectedRevision.Id}&sheet=LicencaSanitaria` ).then(res => res.json());
+                        if (Array.isArray(licencasRaw)) {
+                            licencas = licencasRaw
+                                .filter(l => l.Rev === selectedRevision.Rev)
+                                .map(l => ({ cevs: l.CEVS, validade: l.Validade, cnae: l.CNAE }));
+                        }
+                    } catch (e) { 
+                        console.error("Erro ao buscar dados relacionados:", e);
+                    }
+                    preencherFormulario(selectedRevision, contatos, licencas);
                 } catch (e) {
                     console.error("Erro ao buscar detalhes da empresa:", e);
-                    preencherFormulario(empresa, []);
+                    preencherFormulario(empresa, [], []);
                 }
             });
             listaEmpresas.appendChild(div);
         });
     };
 
-    // --- CONTROLE DO FILTRO ---
     const filtroInput = document.getElementById('filtroEmpresa');
     const onFiltroInput = () => {
         const termoBusca = filtroInput.value.toLowerCase();
@@ -278,13 +293,10 @@ btnConsultar.addEventListener('click', async () => {
         );
         renderizarLista(empresasFiltradas);
     };
-
-    // Limpa o valor do filtro e o evento antigo antes de adicionar um novo
     filtroInput.value = '';
-    filtroInput.removeEventListener('input', onFiltroInput); // Remove o listener antigo para não acumular
-    filtroInput.addEventListener('input', onFiltroInput); // Adiciona o novo listener
+    filtroInput.removeEventListener('input', onFiltroInput);
+    filtroInput.addEventListener('input', onFiltroInput);
 
-    // Renderiza a lista inicial e abre o modal
     renderizarLista(empresasArray);
     modalEmpresas.showModal();
 
@@ -294,62 +306,78 @@ btnConsultar.addEventListener('click', async () => {
   }
 });
 
-
-
-
-
-// --- LÓGICA DOS MODAIS ---
 function inicializarModais() {
-  // Modal de Licença Sanitária
+  const modalGerenciarLicencas = document.getElementById('modalGerenciarLicencas');
   const btnAbrirModalLicenca = document.getElementById('btnAbrirModalLicenca');
-  const licencaStatus = document.getElementById('licencaSanitariaStatus');
-  const hiddenCEVS = document.getElementById('licencaCEVS');
-  const hiddenValidade = document.getElementById('licencaValidade');
-  const hiddenSubgrupo = document.getElementById('licencaSubgrupo');
-  const modalLicenca = document.getElementById('modalLicencaSanitaria');
-  const modalCEVS = document.getElementById('modalLicencaCEVS');
-  const modalValidade = document.getElementById('modalLicencaValidade');
-  const modalSubgrupo = document.getElementById('modalLicencaSubgrupo');
-  const btnSalvarLicenca = document.getElementById('btnSalvarLicenca');
-  const btnCancelarLicenca = document.getElementById('btnCancelarLicenca');
-  const cnaeCells = modalLicenca.querySelectorAll('.cnae-cell');
+  const btnFecharModalLicencas = document.getElementById('btnFecharModalLicencas');
+  const listaLicencasContainer = document.getElementById('listaLicencasContainer');
+  const cevsInput = document.getElementById('licencaCEVS_input');
+  const validadeInput = document.getElementById('licencaValidade_input');
+  const cnaeInput = document.getElementById('licencaCNAE_input');
+  const btnAdicionarLicencaNaLista = document.getElementById('btnAdicionarLicencaNaLista');
+  const cnaeRows = modalGerenciarLicencas.querySelectorAll('.cnae-row-selector');
+
+  const renderizarListaLicencas = () => {
+    listaLicencasContainer.innerHTML = '';
+    licencaSanitariaStore.forEach((licenca, index) => {
+      const div = document.createElement('div');
+      div.className = 'item-na-lista';
+      
+      // Formata a data para exibição, se ela existir
+      const dataFormatada = licenca.validade ? new Date(licenca.validade + 'T00:00:00').toLocaleDateString('pt-BR') : 'N/A';
+      
+      div.textContent = `CEVS: ${licenca.cevs}, Validade: ${dataFormatada}, CNAE: ${licenca.cnae}`;
+      const removeBtn = document.createElement('button');
+      removeBtn.textContent = 'Remover';
+      removeBtn.onclick = () => {
+        licencaSanitariaStore.splice(index, 1);
+        renderizarListaLicencas();
+      };
+      div.appendChild(removeBtn);
+      listaLicencasContainer.appendChild(div);
+    });
+  };
 
   btnAbrirModalLicenca.addEventListener('click', () => {
-    modalCEVS.value = hiddenCEVS.value;
-    modalValidade.value = hiddenValidade.value;
-    modalSubgrupo.value = hiddenSubgrupo.value;
-    modalLicenca.showModal();
+    renderizarListaLicencas();
+    modalGerenciarLicencas.showModal();
   });
-  btnCancelarLicenca.addEventListener('click', () => modalLicenca.close());
-  btnSalvarLicenca.addEventListener('click', () => {
-    const cevs = modalCEVS.value.trim();
-    const validade = modalValidade.value;
-    const subgrupo = modalSubgrupo.value.trim();
-    hiddenCEVS.value = cevs;
-    hiddenValidade.value = validade;
-    hiddenSubgrupo.value = subgrupo;
-    if (validade) {
-      const dataFormatada = new Date(validade + 'T00:00:00').toLocaleDateString('pt-BR');
-      licencaStatus.textContent = `Licença Sanitária: Preenchida (Validade: ${dataFormatada})`;
-      licencaStatus.style.color = 'green';
-    } else if (cevs || subgrupo) {
-      licencaStatus.textContent = 'Licença Sanitária: Preenchida (sem validade)';
-      licencaStatus.style.color = 'orange';
+
+  btnFecharModalLicencas.addEventListener('click', () => {
+    const licencaStatus = document.getElementById('licencaSanitariaStatus');
+    if (licencaSanitariaStore.length > 0) {
+        licencaStatus.textContent = `Licença Sanitária: ${licencaSanitariaStore.length} licença(s) registrada(s).`;
+        licencaStatus.style.color = 'green';
     } else {
-      licencaStatus.textContent = 'Licença Sanitária: Não preenchida';
-      licencaStatus.style.color = 'black';
+        licencaStatus.textContent = 'Licença Sanitária: Não preenchida';
+        licencaStatus.style.color = 'black';
     }
-    modalLicenca.close();
+    modalGerenciarLicencas.close();
   });
-  cnaeCells.forEach(cell => {
-    cell.addEventListener('dblclick', () => {
-      const fullText = cell.textContent.trim();
-      const cnaeCode = fullText.split(' ')[0];
-      modalSubgrupo.value = cnaeCode;
+
+  btnAdicionarLicencaNaLista.addEventListener('click', () => {
+    if (!cevsInput.value && !cnaeInput.value) {
+      alert('Preencha pelo menos o CEVS ou o CNAE.');
+      return;
+    }
+    licencaSanitariaStore.push({
+      cevs: cevsInput.value,
+      validade: validadeInput.value, // Salva como AAAA-MM-DD
+      cnae: cnaeInput.value
+    });
+    cevsInput.value = '';
+    validadeInput.value = '';
+    cnaeInput.value = '';
+    renderizarListaLicencas();
+  });
+
+  cnaeRows.forEach(row => {
+    row.style.cursor = 'pointer';
+    row.addEventListener('dblclick', () => {
+      cnaeInput.value = row.getAttribute('data-cnae');
     });
   });
 
-  // Modal de Licença de Bombeiros
   const btnAbrirModalBombeiros = document.getElementById('btnAbrirModalBombeiros');
   const bombeirosStatus = document.getElementById('bombeirosStatus');
   const hiddenBombeirosTipo = document.getElementById('bombeirosTipo');
@@ -361,14 +389,12 @@ function inicializarModais() {
   const modalBombeirosValidade = document.getElementById('modalBombeirosValidade');
   const btnSalvarBombeiros = document.getElementById('btnSalvarBombeiros');
   const btnCancelarBombeiros = document.getElementById('btnCancelarBombeiros');
+  const bombeirosTipoRows = modalBombeiros.querySelectorAll('tr[data-tipo]');
   
-  // --- LÓGICA DE DUPLO CLIQUE ADICIONADA ---
-  const bombeirosTipoCells = modalBombeiros.querySelectorAll('.bombeiros-tipo-cell');
-  bombeirosTipoCells.forEach(cell => {
-    cell.addEventListener('dblclick', () => {
-      // Encontra a linha (tr) pai da célula clicada
-      const parentRow = cell.closest('tr');
-      const tipo = parentRow.getAttribute('data-tipo');
+  bombeirosTipoRows.forEach(row => {
+    row.style.cursor = 'pointer';
+    row.addEventListener('dblclick', () => {
+      const tipo = row.getAttribute('data-tipo');
       modalBombeirosTipo.value = tipo;
     });
   });
@@ -402,11 +428,9 @@ function inicializarModais() {
     modalBombeiros.close();
   });
 
-  // Botão de fechar do modal de empresas
   document.getElementById('btnFecharModalEmpresas').addEventListener('click', () => modalEmpresas.close());
 }
 
-// --- INICIALIZAÇÃO ---
 document.addEventListener('DOMContentLoaded', () => {
   inicializarModais();
   limparFormulario();
