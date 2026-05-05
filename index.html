@@ -4,25 +4,34 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Cadastrar Empresa</title>
-  <link rel="stylesheet" href="01_00_0_estilo.css" />
+  <link rel="stylesheet" href="CadEmpresa_style.css?v=83" />
 </head>
-<body>        
+<body>
 
+<div class="top-bar">
   <h3>Cadastrar Empresa</h3>
-
-  <div class="buttons-container">
+  <div class="top-actions">
+    <div class="buttons-container">
     <button type="button" id="bntCancelarOperacao">Cancelar Operação</button>
     <button type="button" id="btnRevisarCadastro">Consultar / Revisar Cadastro</button>
   </div>
-
-  <form id="formEmpresa">
-
     <div id="formActions" style="display: flex; gap: 10px; padding-bottom: 15px; border-bottom: 1px solid #ccc; margin-bottom: 15px;">
       <button type="button" id="btnSalvarNovo">Salvar Novo Cadastro</button>
       <button type="button" id="btnHabilitarEdicao" style="display: none; background-color: #28a745;">Habilitar Edição</button>
       <button type="button" id="btnSalvarEdicao" style="display: none; background-color: #007bff;">Salvar Alterações</button>
       <button type="button" id="btnCancelarEdicao" style="display: none; background-color: #6c757d;">Cancelar Edição</button>
     </div>
+  </div>
+</div>
+        
+
+  
+
+  
+
+  <form id="formEmpresa">
+
+    
 
     <input type="hidden" id="idEmpresaRevisao" name="idEmpresaRevisao" />
 
@@ -82,12 +91,16 @@
       </div>
     </div>
 
+    <div class="divObs">
+      <h4>Observações</h4>
+      <textarea id="observacoes" name="observacoes" rows="3" placeholder="Observações gerais da empresa"></textarea>
+    </div>
+
     <div class="divC">
       <h4>Contatos</h4>
       <div id="contatosContainer">
         <!-- Contatos são adicionados dinamicamente aqui -->
       </div>
-      <button type="button" id="btnAddContato">+ Adicionar Contato</button>
     </div>
 
     <div class="divD">
@@ -102,6 +115,16 @@
         <span id="bombeirosStatus">Licença de Bombeiros: Não preenchida</span>
         <button type="button" id="btnAbrirModalBombeiros">Adicionar / Editar</button>
       </div>
+
+      <div id="afeContainer" class="doc-container">
+        <span id="afeStatusResumo">AFE (ANVISA): Não preenchida</span>
+        <button type="button" id="btnAbrirModalAFE">Adicionar / Editar</button>
+      </div>
+
+      <div id="sstContainer" class="doc-container">
+        <span id="sstStatusResumo">Saúde Ocupacional: Não preenchido</span>
+        <button type="button" id="btnAbrirModalSST">Adicionar / Editar</button>
+      </div>
     
       <input type="hidden" id="licencaCEVS" />
       <input type="hidden" id="licencaValidade" />
@@ -110,6 +133,32 @@
       <input type="hidden" id="bombeirosTipo" />
       <input type="hidden" id="bombeirosNumero" />
       <input type="hidden" id="bombeirosValidade" />
+      <input type="hidden" id="bombeirosStatusValor" />
+      <input type="hidden" id="bombeirosObservacoes" />
+
+      <input type="hidden" id="afeNumero" />
+      <input type="hidden" id="afeDataAutorizacao" />
+      <input type="hidden" id="afeProcesso" />
+      <input type="hidden" id="afeSituacao" />
+      <input type="hidden" id="afeObservacoes" />
+
+      <input type="hidden" id="sstPgrDataEmissao" />
+      <input type="hidden" id="sstPgrEmitidoPor" />
+      <input type="hidden" id="sstPgrResponsavelTecnico" />
+      <input type="hidden" id="sstPgrCREA" />
+      <input type="hidden" id="sstPgrPeriodoDe" />
+      <input type="hidden" id="sstPgrPeriodoAte" />
+      <input type="hidden" id="sstPgrObservacoes" />
+
+      <input type="hidden" id="sstPcmsoDataEmissao" />
+      <input type="hidden" id="sstPcmsoEmitidoPor" />
+      <input type="hidden" id="sstPcmsoCNAE" />
+      <input type="hidden" id="sstPcmsoMedicoResponsavel" />
+      <input type="hidden" id="sstPcmsoConselho" />
+      <input type="hidden" id="sstPcmsoEspecialidade" />
+      <input type="hidden" id="sstPcmsoPeriodoDe" />
+      <input type="hidden" id="sstPcmsoPeriodoAte" />
+      <input type="hidden" id="sstPcmsoObservacoes" />
     </div>
   </form>
 
@@ -122,152 +171,276 @@
 
 
 
-  <!-- MODAL BOMBEIROS QUE ESTAVA FALTANDO -->
-  <dialog id="modalBombeiros">
-    <div class="modal-content">
-      <h3>Preenchimento da Licença de Bombeiros</h3>
-      <div class="modal-layout">
+  <!-- MODAL DE GERENCIAMENTO DA LICENÇA DE BOMBEIROS -->
+  <dialog id="modalBombeiros" class="modal-bombeiros modal-licencas-sanitarias">
+    <div class="modal-content bombeiros-modal-content">
+      <h3>Gerenciar Licença de Bombeiros</h3>
 
-
-        <div class="modal-form">
+      <div class="licencas-modal-grid bombeiros-modal-grid">
+        <section class="licencas-bloco bombeiros-bloco-principal">
           <h4>Dados da Licença</h4>
-          
-          <!-- CAMPO ALTERADO DE SELECT PARA INPUT -->
-          <label for="modalBombeirosTipo">Tipo de Licença (dê um duplo clique na tabela ao lado):</label>
-          <input type="text" id="modalBombeirosTipo" style="width: 100%; margin-bottom: 10px;" readonly>
-          
-          <label for="modalBombeirosNumero">Número:</label>
-          <input type="text" id="modalBombeirosNumero" style="width: 100%; margin-bottom: 10px;">
-          
-          <label for="modalBombeirosValidade">Validade:</label>
-          <input type="date" id="modalBombeirosValidade" style="width: 100%; margin-bottom: 20px;">
-          
-          <div class="modal-actions">
-            <button type="button" id="btnSalvarBombeiros">Salvar Licença</button>
-            <button type="button" id="btnCancelarBombeiros">Cancelar</button>
-          </div>
-        </div>
-
-
-
-
-        <div class="modal-consulta">
-          <h4>Regras para Consulta</h4>
-          <p>A principal diferença entre o <strong>AVCB</strong> e o <strong>CLCB</strong> é o tipo de edificação.</p>
-
-          
-
-
-
-
-          <!-- Tabela BOMBEIROS -->
-                   
-          <table>
+          <table class="licencas-tabela-edicao bombeiros-tabela-edicao">
             <thead>
               <tr>
-                <th>Tipo</th>
-                <th>Risco</th>
-                <th>Exemplos</th>
+                <th>Tipo de Licença <span>(duplo clique para consultar)</span></th>
+                <th>Número</th>
+                <th>Validade</th>
+                <th>Status</th>
               </tr>
             </thead>
-          
-            
-
             <tbody>
-              <!-- Classe movida do <tr> para o <td> e cursor adicionado -->
-              <tr data-tipo="AVCB">
-                <td class="bombeiros-tipo-cell" style="cursor: pointer;">AVCB</td>
-                <td class="bombeiros-tipo-cell" style="cursor: pointer;">Médio e alto risco</td>
-                <td class="bombeiros-tipo-cell" style="cursor: pointer;">Fábricas, hospitais</td>
-              </tr>
-              <!-- Classe movida do <tr> para o <td> e cursor adicionado -->
-              <tr data-tipo="CLCB">
-                <td class="bombeiros-tipo-cell" style="cursor: pointer;">CLCB</td>
-                <td class="bombeiros-tipo-cell" style="cursor: pointer;">Baixo risco</td>
-                <td class="bombeiros-tipo-cell" style="cursor: pointer;">Pequenas lojas, comércios</td>
+              <tr>
+                <td><input type="text" id="modalBombeirosTipo" placeholder="Dê duplo clique para selecionar" readonly></td>
+                <td><input type="text" id="modalBombeirosNumero" placeholder="Digite o número"></td>
+                <td><input type="date" id="modalBombeirosValidade"></td>
+                <td><input type="text" id="modalBombeirosStatus" placeholder="Automático" readonly></td>
               </tr>
             </tbody>
-
-
           </table>
 
+          <div class="licencas-observacoes-area">
+            <label for="modalBombeirosObservacoes">Observações</label>
+            <textarea id="modalBombeirosObservacoes" rows="3" placeholder="Observações do AVCB / CLCB"></textarea>
+          </div>
+        </section>
+      </div>
 
+      <div class="modal-actions licencas-modal-actions">
+        <button type="button" id="btnCancelarBombeiros">Cancelar</button>
+        <button type="button" id="btnSalvarBombeiros">Salvar</button>
+      </div>
+    </div>
+  </dialog>
 
+  <!-- MODAL AUXILIAR - TIPO DE LICENÇA DE BOMBEIROS -->
+  <dialog id="modalBombeirosTipoConsulta" class="modal-bombeiros-tipo">
+    <div class="modal-content bombeiros-tipo-content">
+      <h3>Regras para Consulta</h3>
+      <p>A principal diferença entre o <strong>AVCB</strong> e o <strong>CLCB</strong> é o tipo de edificação.</p>
 
-          <p style="margin-top: 15px;"><strong>Obrigatório para:</strong> construção, reforma, mudança de ocupação, ampliação, regularização e construções provisórias.</p>
-        </div>
+      <table class="licencas-tabela-consulta bombeiros-tabela-consulta">
+        <thead>
+          <tr>
+            <th>Tipo</th>
+            <th>Risco</th>
+            <th>Exemplos</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr data-tipo="AVCB">
+            <td><strong>AVCB</strong></td>
+            <td>Médio e alto risco</td>
+            <td>Fábricas, hospitais</td>
+          </tr>
+          <tr data-tipo="CLCB">
+            <td><strong>CLCB</strong></td>
+            <td>Baixo risco</td>
+            <td>Pequenas lojas, comércios</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p style="margin-top: 15px;"><strong>Obrigatório para:</strong> construção, reforma, mudança de ocupação, ampliação, regularização e construções provisórias.</p>
+
+      <div class="modal-actions licencas-modal-actions">
+        <button type="button" id="btnFecharModalBombeirosTipo">Cancelar</button>
       </div>
     </div>
   </dialog>
 
 
-  <!-- NOVO MODAL DE GERENCIAMENTO DE LICENÇAS SANITÁRIAS -->
-  <dialog id="modalGerenciarLicencas">
-    <div class="modal-content">
-      <h3>Gerenciar Licenças Sanitárias</h3>
-      <div class="modal-layout">
-        
-        <!-- Lado Esquerdo: Formulário para adicionar nova licença -->
-        <div class="modal-form">
-          <h4>Adicionar Nova Licença</h4>
-          <label for="licencaCEVS">Nº CEVS:</label>
-          <input type="text" id="licencaCEVS_input">
-          
-          <label for="licencaValidade">Validade:</label>
-          <input type="date" id="licencaValidade_input">
-          
-          <label for="licencaCNAE">CNAE (dê um duplo clique na tabela ao lado):</label>
-          <input type="text" id="licencaCNAE_input" readonly>
-          
-          <div class="modal-actions">
-            <button type="button" id="btnAdicionarLicencaNaLista">Adicionar à Lista</button>
-          </div>
-        </div>
+  <!-- MODAL DE GERENCIAMENTO DA AFE (ANVISA) -->
+  <dialog id="modalAFE" class="modal-afe modal-licencas-sanitarias">
+    <div class="modal-content afe-modal-content">
+      <h3>Gerenciar AFE (ANVISA)</h3>
 
-        <!-- Lado Direito: Lista de licenças e tabela de consulta -->
-        <div class="modal-consulta">
-          <h4>Licenças Adicionadas</h4>
-          <div id="listaLicencasContainer" style="min-height: 100px; border: 1px solid #ccc; padding: 10px; margin-bottom: 20px; border-radius: 4px;">
-            <!-- A lista de licenças será inserida aqui pelo JavaScript -->
-          </div>
-
-          <h4>Regras para Consulta</h4>
-          <table>
+      <div class="licencas-modal-grid afe-modal-grid">
+        <section class="licencas-bloco afe-bloco-principal">
+          <h4>Dados da Autorização</h4>
+          <table class="licencas-tabela-edicao afe-tabela-edicao">
             <thead>
-              <tr><th>SUBGRUPO</th><th>AGRUPAMENTO</th><th>ATIVIDADE ECONÔMICA-CNAE</th></tr>
+              <tr>
+                <th>Nº da Autorização</th>
+                <th>Data da Autorização</th>
+                <th>Nº do Processo</th>
+                <th>Situação</th>
+              </tr>
             </thead>
             <tbody>
-              <tr class="cnae-row-selector" data-cnae="2660-4/00">
-                <td>FABRIL</td>
-                <td>INDÚSTRIA DE PRODUTOS PARA A SAÚDE</td>
-                <td><strong>2660-4/00</strong> FABRICAÇÃO DE APARELHOS ELETROMÉDICOS...</td>
-              </tr>
-              <tr class="cnae-row-selector" data-cnae="4645-1/01">
-                <td>DISTRIBUIDORA/IMPORTADORA</td>
-                <td>COMÉRCIO ATACADISTA DE PRODUTOS PARA A SAÚDE</td>
-                <td><strong>4645-1/01</strong> COMÉRCIO ATACADISTA DE INSTRUMENTOS E MATERIAIS...</td>
-              </tr>
-              <tr class="cnae-row-selector" data-cnae="4664-8/00">
-                <td>DISTRIBUIDORA/IMPORTADORA</td>
-                <td>COMÉRCIO ATACADISTA DE PRODUTOS PARA A SAÚDE</td>
-                <td><strong>4664-8/00</strong> COMÉRCIO ATACADISTA DE MÁQUINAS, APARELHOS...</td>
+              <tr>
+                <td><input type="text" id="modalAFENumero" placeholder="Digite o número"></td>
+                <td><input type="date" id="modalAFEDataAutorizacao"></td>
+                <td><input type="text" id="modalAFEProcesso" placeholder="Digite o processo"></td>
+                <td>
+                  <select id="modalAFESituacao">
+                    <option value="">Selecione</option>
+                    <option value="Ativa">Ativa</option>
+                    <option value="Inativa">Inativa</option>
+                  </select>
+                </td>
               </tr>
             </tbody>
           </table>
-        </div>
+
+          <div class="licencas-observacoes-area">
+            <label for="modalAFEObservacoes">Observações</label>
+            <textarea id="modalAFEObservacoes" rows="3" placeholder="Observações da AFE"></textarea>
+          </div>
+
+          <div class="afe-link-consulta">
+            <a href="https://consultas.anvisa.gov.br/#/empresas/empresas/" target="_blank" rel="noopener noreferrer">Consultar validade da AFE</a>
+            <span class="afe-cnpj-consulta">CNPJ para consulta: <strong id="modalAFECNPJConsulta">-</strong></span>
+          </div>
+        </section>
       </div>
-      <div class="modal-actions" style="justify-content: flex-end;">
-        <button type="button" id="btnFecharModalLicencas">Fechar</button>
+
+      <div class="modal-actions licencas-modal-actions">
+        <button type="button" id="btnCancelarAFE">Cancelar</button>
+        <button type="button" id="btnSalvarAFE">Salvar</button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- MODAL DE GERENCIAMENTO PGR / PCMSO -->
+  <dialog id="modalSST" class="modal-sst modal-licencas-sanitarias">
+    <div class="modal-content sst-modal-content">
+      <h3>Gerenciar Saúde - PGR / PCMSO</h3>
+
+      <section class="licencas-bloco sst-bloco-principal">
+        <div class="sst-barra-registros">
+          <div class="sst-botoes-registro">
+            <button type="button" id="btnSSTNovoRegistro">+ Novo Registro</button>
+            <button type="button" id="btnSSTEditarRegistro">Editar Registro</button>
+            <button type="button" id="btnSSTAnteriorRegistro">&lt; Anterior</button>
+            <button type="button" id="btnSSTProximoRegistro">Próximo &gt;</button>
+          </div>
+          <div class="sst-indicador-registro" id="sstIndicadorRegistro">Registro atual</div>
+        </div>
+
+        <table class="sst-tabela-comparativa">
+          <thead>
+            <tr>
+              <th class="sst-col-campo"></th>
+              <th>Programa de Gerenciamento de Riscos<br>(PGR)</th>
+              <th>Programa de Controle Médico de Saúde Ocupacional<br>(PCMSO)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Data de emissão</td>
+              <td><input type="text" id="modalSSTPgrDataEmissao" class="sst-data-br" placeholder="dd/mm/aaaa" inputmode="numeric" maxlength="10"></td>
+              <td><input type="text" id="modalSSTPcmsoDataEmissao" class="sst-data-br" placeholder="dd/mm/aaaa" inputmode="numeric" maxlength="10"></td>
+            </tr>
+            <tr>
+              <td>Emitido por</td>
+              <td><input type="text" id="modalSSTPgrEmitidoPor" placeholder="Emitido por"></td>
+              <td><input type="text" id="modalSSTPcmsoEmitidoPor" placeholder="Emitido por"></td>
+            </tr>
+            <tr>
+              <td>CNAE</td>
+              <td><input type="text" id="modalSSTPgrCNAE" placeholder="Não aplicável / opcional" disabled></td>
+              <td><input type="text" id="modalSSTPcmsoCNAE" placeholder="CNAE"></td>
+            </tr>
+            <tr>
+              <td>Responsável Técnico</td>
+              <td><input type="text" id="modalSSTPgrResponsavelTecnico" placeholder="Responsável técnico"></td>
+              <td><input type="text" id="modalSSTPcmsoMedicoResponsavel" placeholder="Médico responsável"></td>
+            </tr>
+            <tr>
+              <td>Conselho de Classe</td>
+              <td><input type="text" id="modalSSTPgrCREA" placeholder="CREA"></td>
+              <td><input type="text" id="modalSSTPcmsoConselho" placeholder="CRM / Conselho"></td>
+            </tr>
+            <tr>
+              <td>Especialidade</td>
+              <td><input type="text" id="modalSSTPgrEspecialidade" placeholder="Não aplicável / opcional" disabled></td>
+              <td><input type="text" id="modalSSTPcmsoEspecialidade" placeholder="Especialidade"></td>
+            </tr>
+            <tr>
+              <td>Período - De</td>
+              <td><input type="text" id="modalSSTPgrPeriodoDe" class="sst-data-br" placeholder="dd/mm/aaaa" inputmode="numeric" maxlength="10"></td>
+              <td><input type="text" id="modalSSTPcmsoPeriodoDe" class="sst-data-br" placeholder="dd/mm/aaaa" inputmode="numeric" maxlength="10"></td>
+            </tr>
+            <tr>
+              <td>Período - Até</td>
+              <td><input type="text" id="modalSSTPgrPeriodoAte" class="sst-data-br" placeholder="dd/mm/aaaa" inputmode="numeric" maxlength="10"></td>
+              <td><input type="text" id="modalSSTPcmsoPeriodoAte" class="sst-data-br" placeholder="dd/mm/aaaa" inputmode="numeric" maxlength="10"></td>
+            </tr>
+            <tr>
+              <td>Observações</td>
+              <td><textarea id="modalSSTPgrObservacoes" rows="4" placeholder="Observações do PGR"></textarea></td>
+              <td><textarea id="modalSSTPcmsoObservacoes" rows="4" placeholder="Observações do PCMSO"></textarea></td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <div class="modal-actions licencas-modal-actions">
+        <button type="button" id="btnCancelarSST">Cancelar</button>
+        <button type="button" id="btnSalvarSST">Salvar</button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- MODAL DE GERENCIAMENTO DE LICENÇAS SANITÁRIAS -->
+  <dialog id="modalGerenciarLicencas" class="modal-licencas-sanitarias">
+    <div class="modal-content licencas-modal-content">
+      <h3>Gerenciar Licenças Sanitárias</h3>
+
+      <div class="licencas-modal-grid">
+        <section class="licencas-bloco licencas-bloco-principal">
+          <h4>Licenças Sanitárias</h4>
+          <table class="licencas-tabela-edicao">
+            <thead>
+              <tr>
+                <th>Nº CEVS</th>
+                <th>Validade</th>
+                <th>CNAE(s) <span>(duplo clique no campo para consultar)</span></th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="licencasSanitariasTbody"></tbody>
+          </table>
+
+          <div class="licencas-observacoes-area">
+            <label for="licencasObservacoesModal">Observações</label>
+            <textarea id="licencasObservacoesModal" rows="3" placeholder="Observações da licença sanitária selecionada"></textarea>
+          </div>
+        </section>
+      </div>
+
+      <div class="modal-actions licencas-modal-actions">
+        <button type="button" id="btnCancelarModalLicencas">Cancelar</button>
+        <button type="button" id="btnSalvarModalLicencas">Salvar</button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- MODAL AUXILIAR - REGRAS CNAE / LICENÇA SANITÁRIA -->
+  <dialog id="modalLicencasCnaeConsulta" class="modal-licencas-cnae-consulta">
+    <div class="modal-content licencas-cnae-content">
+      <h3>Regras para Consulta - CNAE</h3>
+      <p>Dê duplo clique na linha desejada para preencher o CNAE selecionado.</p>
+      <table class="licencas-tabela-consulta">
+        <thead>
+          <tr>
+            <th>SUBGRUPO</th>
+            <th>AGRUPAMENTO</th>
+            <th>ATIVIDADE ECONÔMICA-CNAE</th>
+          </tr>
+        </thead>
+        <tbody id="licencasCnaeTbody"></tbody>
+      </table>
+      <div class="modal-actions licencas-modal-actions">
+        <button type="button" id="btnFecharModalLicencasCnae">Cancelar</button>
       </div>
     </div>
   </dialog>
 
 
 
-
-
-
-
-  <script type="module" src="01_00_0_principal.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <script src="CadEmpresa_SupabaseClient.js?v=83"></script>
+  <script type="module" src="CadEmpresa_main.js?v=83"></script>
 </body>
 </html>
