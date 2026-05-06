@@ -53,12 +53,12 @@
 
     btn.addEventListener('click', async function(){
       if(!window.supabaseClient){
-        window.location.href = '../00 - Login/index.html';
+        window.location.href = '../00-Login/index.html';
         return;
       }
 
       await window.supabaseClient.auth.signOut();
-      window.location.href = '../00 - Login/index.html';
+      window.location.href = '../00-Login/index.html';
     });
 
     area.appendChild(texto);
