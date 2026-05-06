@@ -4,7 +4,7 @@
 
 (async function(){
   function voltarParaLogin(){
-    window.location.href = "../00-Login/index.html";
+    window.location.href = "/index.html";
   }
 
   if(!window.supabaseClient){
