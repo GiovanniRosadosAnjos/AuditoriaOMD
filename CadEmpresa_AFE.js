@@ -4,6 +4,7 @@
 // Salva somente no botão principal "Salvar Alterações".
 
 import { buscarRegistros, salvarRegistro } from './CRUD.js';
+import { obterUsuarioIdAutenticado } from './utils_auth.js';
 
 const TABELA_AFE = 'afe';
 
@@ -166,12 +167,13 @@ export async function salvarAFEPorEmpresa(empresaId) {
 
   const existente = await buscarAFEPorEmpresa(empresaId);
   const payload = mapAFEToSupabase(dados, empresaId);
+  const userId = await obterUsuarioIdAutenticado();
 
   if (existente?.id) {
-    payload.alterado_por = 'anon';
+    payload.alterado_por = userId;
     payload.updated_at = new Date().toISOString();
   } else {
-    payload.criado_por = 'anon';
+    payload.criado_por = userId;
   }
 
   const salvo = await salvarRegistro(TABELA_AFE, payload, {
@@ -383,7 +385,7 @@ export async function salvarAFEPorEmpresa(empresaId) {
   if (existente?.id) {
     const { data, error } = await client
       .from(TABELA_AFE)
-      .update({ ...payload, alterado_por: 'anon', updated_at: new Date().toISOString() })
+      .update({ ...payload, alterado_por: userId, updated_at: new Date().toISOString() })
       .eq('id', existente.id)
       .select()
       .single();
@@ -394,7 +396,7 @@ export async function salvarAFEPorEmpresa(empresaId) {
 
   const { data, error } = await client
     .from(TABELA_AFE)
-    .insert({ ...payload, criado_por: 'anon' })
+    .insert({ ...payload, criado_por: userId })
     .select()
     .single();
 

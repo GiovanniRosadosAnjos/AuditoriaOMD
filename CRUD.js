@@ -1,4 +1,6 @@
 // CRUD.js
+
+import { obterUsuarioIdAutenticado } from './utils_auth.js';
 // Motor CRUD genérico e leve para Supabase.
 // Objetivo: padronizar operações de dados sem refatorar tudo de uma vez.
 // Nesta revisão o arquivo foi apenas criado. A integração será feita entidade por entidade.
@@ -19,9 +21,27 @@ export function limparPayload(payload = {}) {
   const limpo = {};
   Object.entries(payload || {}).forEach(([chave, valor]) => {
     if (valor === undefined) return;
+    // Nunca enviar fallback antigo em campos UUID.
+    if ((chave === 'criado_por' || chave === 'alterado_por') && String(valor).trim().toLowerCase() === 'anon') return;
     limpo[chave] = valor;
   });
   return limpo;
+}
+
+async function aplicarAuditoriaPayload(payload = {}, tipo = 'insert') {
+  const dados = limparPayload(payload);
+  const userId = await obterUsuarioIdAutenticado();
+
+  if (tipo === 'insert') {
+    dados.criado_por = userId;
+  }
+
+  if (tipo === 'update') {
+    dados.alterado_por = userId;
+    dados.updated_at = new Date().toISOString();
+  }
+
+  return dados;
 }
 
 export async function buscarRegistros(tabela, opcoes = {}) {
@@ -72,10 +92,23 @@ export async function buscarRegistroPorId(tabela, id, opcoes = {}) {
 export async function inserirRegistro(tabela, payload, opcoes = {}) {
   const client = obterClienteSupabase();
   const { select = '*', mapper = row => row } = opcoes;
+  const dadosLimpos = await aplicarAuditoriaPayload(payload, 'insert');
+
+  // Em tabelas com RLS e vínculo automático por trigger, como empresas,
+  // o INSERT funciona, mas o SELECT imediato pode falhar antes do vínculo ficar visível.
+  // Para esses casos, usar select: null.
+  if (select === null || select === false) {
+    const { error } = await client
+      .from(tabela)
+      .insert(dadosLimpos);
+
+    if (error) throw error;
+    return mapper(dadosLimpos);
+  }
 
   const { data, error } = await client
     .from(tabela)
-    .insert(limparPayload(payload))
+    .insert(dadosLimpos)
     .select(select)
     .single();
 
@@ -93,7 +126,7 @@ export async function atualizarRegistro(tabela, id, payload, opcoes = {}) {
 
   const { data, error } = await client
     .from(tabela)
-    .update(limparPayload(payload))
+    .update(await aplicarAuditoriaPayload(payload, 'update'))
     .eq('id', id)
     .select(select)
     .single();

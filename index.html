@@ -6,7 +6,7 @@
   <title>Cadastrar Empresa</title>
   <link rel="stylesheet" href="CadEmpresa_style.css?v=83" />
 </head>
-<body>
+<body data-auth-guard="hidden" style="display: none;">
 
 <div class="top-bar">
   <h3>Cadastrar Empresa</h3>
@@ -439,8 +439,11 @@
 
 
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="CadEmpresa_SupabaseClient.js?v=83"></script>
+  <script src="utils_auth_guard.js?v=95"></script>
+  <script src="CadEmpresa_Logout.js?v=95"></script>
   <script type="module" src="CadEmpresa_main.js?v=83"></script>
+
 </body>
 </html>

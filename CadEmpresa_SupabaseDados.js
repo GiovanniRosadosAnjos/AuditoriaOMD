@@ -1,10 +1,10 @@
 // CadEmpresa_SupabaseDados.js
 // Camada de dados da migração Sheet/API -> Supabase.
-// Cadastro de empresas e licença sanitária usam exclusivamente o motor CRUD.js.
-// Código antigo de empresas e licença sanitária foi movido para o final do arquivo e comentado, apenas como fallback de consulta.
+// Cadastro de empresas, contatos e licença sanitária usam exclusivamente o motor CRUD.js.
+// Código antigo dessas entidades foi movido para o final do arquivo e comentado, apenas como fallback de consulta.
 // Demais entidades serão migradas uma por vez.
 
-import { buscarRegistros, salvarRegistro, excluirRegistrosPorIds } from './CRUD.js';
+import { buscarRegistros, salvarRegistro, excluirRegistrosPorIds, sincronizarFilhosPorEmpresa } from './CRUD.js';
 
 function getSupabase() {
   const client = window.supabaseClient || null;
@@ -65,10 +65,27 @@ export async function buscarEmpresas() {
 }
 
 export async function salvarEmpresaAtual(empresa) {
-  return salvarRegistro('empresas', mapEmpresaToSupabase(empresa), {
-    id: empresa?.Id || '',
-    select: '*',
-    mapper: mapEmpresaFromSupabase
+  const idAtual = empresa?.Id || '';
+
+  if (isUuid(idAtual)) {
+    return salvarRegistro('empresas', mapEmpresaToSupabase(empresa), {
+      id: idAtual,
+      select: '*',
+      mapper: mapEmpresaFromSupabase
+    });
+  }
+
+  const novoId = crypto.randomUUID();
+  const payload = {
+    id: novoId,
+    ...mapEmpresaToSupabase(empresa)
+  };
+
+  return salvarRegistro('empresas', payload, {
+    id: '',
+    select: null,
+    mapper: mapEmpresaFromSupabase,
+    removerIdDoPayload: false
   });
 }
 
@@ -100,73 +117,27 @@ function mapContatoToSupabase(empresaId, contato = {}) {
 
 export async function buscarContatosPorId(empresaId) {
   if (!empresaId) return [];
-  const client = getSupabase();
 
-  const { data, error } = await client
-    .from('contatos_empresa')
-    .select('*')
-    .eq('empresa_id', empresaId)
-    .order('created_at', { ascending: true });
-
-  if (error) throw error;
-  return (data || []).map(mapContatoFromSupabase);
+  return buscarRegistros('contatos_empresa', {
+    select: '*',
+    filtros: [{ campo: 'empresa_id', valor: empresaId }],
+    orderBy: 'created_at',
+    ascending: true,
+    mapper: mapContatoFromSupabase
+  });
 }
 
 export async function salvarContatosEmpresa(empresaId, contatos = []) {
   if (!empresaId) return null;
-  const client = getSupabase();
-  const lista = Array.isArray(contatos) ? contatos : [];
 
-  const { data: existentes, error: erroBusca } = await client
-    .from('contatos_empresa')
-    .select('id')
-    .eq('empresa_id', empresaId);
-
-  if (erroBusca) throw erroBusca;
-
-  const idsMantidos = new Set();
-  const resultados = [];
-
-  for (const contato of lista) {
-    const contatoId = contato.id || contato.Id || '';
-    const payload = mapContatoToSupabase(empresaId, contato);
-
-    if (contatoId && isUuid(contatoId)) {
-      idsMantidos.add(contatoId);
-      const { data, error } = await client
-        .from('contatos_empresa')
-        .update(payload)
-        .eq('id', contatoId)
-        .eq('empresa_id', empresaId)
-        .select()
-        .single();
-      if (error) throw error;
-      resultados.push(data);
-    } else {
-      const { data, error } = await client
-        .from('contatos_empresa')
-        .insert({ ...payload, criado_por: 'anon' })
-        .select()
-        .single();
-      if (error) throw error;
-      if (data?.id) idsMantidos.add(data.id);
-      resultados.push(data);
-    }
-  }
-
-  const idsParaExcluir = (existentes || [])
-    .map(row => row.id)
-    .filter(id => id && !idsMantidos.has(id));
-
-  if (idsParaExcluir.length) {
-    const { error: erroDelete } = await client
-      .from('contatos_empresa')
-      .delete()
-      .in('id', idsParaExcluir);
-    if (erroDelete) throw erroDelete;
-  }
-
-  return resultados;
+  return sincronizarFilhosPorEmpresa('contatos_empresa', empresaId, contatos, {
+    campoEmpresa: 'empresa_id',
+    mapperToDb: contato => mapContatoToSupabase(empresaId, contato),
+    mapperFromDb: mapContatoFromSupabase,
+    select: '*',
+    permitirExcluirAusentes: true,
+    payloadExtraInsert: {}
+  });
 }
 
 // Compatibilidade com chamadas antigas.
@@ -496,5 +467,90 @@ export async function salvarEmpresaAtual_ANTIGO_NAO_USAR(empresa) {
   if (error) throw error;
   return mapEmpresaFromSupabase(data);
 }
+================================================================================
+*/
+
+
+/*
+================================================================================
+FALLBACK / CONSULTA - CRUD ANTIGO DE CONTATOS - NÃO USAR
+Movido para cá na REV91. Mantido apenas para consulta/rollback manual.
+O fluxo ativo usa CRUD.js via buscarRegistros() e sincronizarFilhosPorEmpresa().
+================================================================================
+export async function buscarContatosPorId(empresaId) {
+  if (!empresaId) return [];
+  const client = getSupabase();
+
+  const { data, error } = await client
+    .from('contatos_empresa')
+    .select('*')
+    .eq('empresa_id', empresaId)
+    .order('created_at', { ascending: true });
+
+  if (error) throw error;
+  return (data || []).map(mapContatoFromSupabase);
+}
+
+export async function salvarContatosEmpresa(empresaId, contatos = []) {
+  if (!empresaId) return null;
+  const client = getSupabase();
+  const lista = Array.isArray(contatos) ? contatos : [];
+
+  const { data: existentes, error: erroBusca } = await client
+    .from('contatos_empresa')
+    .select('id')
+    .eq('empresa_id', empresaId);
+
+  if (erroBusca) throw erroBusca;
+
+  const idsMantidos = new Set();
+  const resultados = [];
+  const userId = await obterUsuarioIdAutenticado();
+
+  for (const contato of lista) {
+    const contatoId = contato.id || contato.Id || '';
+    const payload = mapContatoToSupabase(empresaId, contato);
+
+    if (contatoId && isUuid(contatoId)) {
+      idsMantidos.add(contatoId);
+      const { data, error } = await client
+        .from('contatos_empresa')
+        .update(payload)
+        .eq('id', contatoId)
+        .eq('empresa_id', empresaId)
+        .select()
+        .single();
+      if (error) throw error;
+      resultados.push(data);
+    } else {
+      const { data, error } = await client
+        .from('contatos_empresa')
+        .insert({ ...payload, criado_por: userId })
+        .select()
+        .single();
+      if (error) throw error;
+      if (data?.id) idsMantidos.add(data.id);
+      resultados.push(data);
+    }
+  }
+
+  const idsParaExcluir = (existentes || [])
+    .map(row => row.id)
+    .filter(id => id && !idsMantidos.has(id));
+
+  if (idsParaExcluir.length) {
+    const { error: erroDelete } = await client
+      .from('contatos_empresa')
+      .delete()
+      .in('id', idsParaExcluir);
+    if (erroDelete) throw erroDelete;
+  }
+
+  return resultados;
+}
+
+
+================================================================================
+FIM DO FALLBACK / CONSULTA - CRUD ANTIGO DE CONTATOS
 ================================================================================
 */
