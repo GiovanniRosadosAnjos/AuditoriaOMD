@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Auditoria SaaS - Login</title>
+  <link rel="stylesheet" href="login.css">
+</head>
+<body>
+
+  <main class="login-page">
+    <section class="login-card">
+      <div class="login-header">
+        <h1>Auditoria SaaS</h1>
+        <p>Gestão de Auditorias</p>
+      </div>
+
+      <div class="login-form">
+        <label for="loginEmail">E-mail</label>
+        <input type="email" id="loginEmail" placeholder="seu@email.com">
+
+        <label for="loginSenha">Senha</label>
+        <input type="password" id="loginSenha" placeholder="Digite sua senha">
+
+        <button id="btnEntrar" type="button">Entrar</button>
+        <button id="btnCriarConta" type="button" class="secondary">Criar conta</button>
+
+        <p id="loginMensagem" class="mensagem"></p>
+      </div>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabaseClient.js"></script>
+  <script src="login.js"></script>
+
+</body>
+</html>
